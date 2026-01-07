@@ -357,27 +357,95 @@ function Admin() {
                         </div>
                       </div>
                       <div className="project-details">
-                        <div className="details-grid">
-                          <div className="detail-item">
-                            <span className="detail-label">Type</span>
-                            <span className="detail-value">{config.projectType || 'Not specified'}</span>
-                          </div>
-                          <div className="detail-item">
-                            <span className="detail-label">Budget</span>
-                            <span className="detail-value">{config.budget || 'Not specified'}</span>
-                          </div>
-                          <div className="detail-item">
-                            <span className="detail-label">Timeline</span>
-                            <span className="detail-value">{config.timeline || 'Not specified'}</span>
-                          </div>
-                          <div className="detail-item">
-                            <span className="detail-label">Platforms</span>
-                            <span className="detail-value">{config.platform.join(', ') || 'None'}</span>
+                        {/* Project Information */}
+                        <div className="details-section">
+                          <h4 className="details-section-title">Project Information</h4>
+                          <div className="details-grid">
+                            <div className="detail-item">
+                              <span className="detail-label">Project Type</span>
+                              <span className="detail-value">{config.projectType || 'Not specified'}</span>
+                            </div>
+                            <div className="detail-item">
+                              <span className="detail-label">Timeline</span>
+                              <span className="detail-value">{config.timeline || 'Not specified'}</span>
+                            </div>
+                            <div className="detail-item">
+                              <span className="detail-label">Target Audience</span>
+                              <span className="detail-value">{config.targetAudience || 'Not specified'}</span>
+                            </div>
+                            <div className="detail-item">
+                              <span className="detail-label">Platforms</span>
+                              <span className="detail-value">
+                                {Array.isArray(config.platform) && config.platform.length > 0 
+                                  ? config.platform.join(', ') 
+                                  : 'None'}
+                              </span>
+                            </div>
                           </div>
                         </div>
-                        {config.features.length > 0 && (
-                          <div className="detail-section">
-                            <span className="detail-label">Features</span>
+
+                        {/* Contact Information */}
+                        <div className="details-section">
+                          <h4 className="details-section-title">Contact Information</h4>
+                          <div className="details-grid">
+                            <div className="detail-item">
+                              <span className="detail-label">Contact Name</span>
+                              <span className="detail-value">{config.contactName || 'Not provided'}</span>
+                            </div>
+                            <div className="detail-item">
+                              <span className="detail-label">Email</span>
+                              <span className="detail-value">{config.contactEmail || 'Not provided'}</span>
+                            </div>
+                            <div className="detail-item">
+                              <span className="detail-label">Phone</span>
+                              <span className="detail-value">{config.contactPhone || 'Not provided'}</span>
+                            </div>
+                            <div className="detail-item">
+                              <span className="detail-label">Company</span>
+                              <span className="detail-value">{config.companyName || 'Not provided'}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Design & Branding */}
+                        {(config.designStyle || config.colorScheme || config.branding) && (
+                          <div className="details-section">
+                            <h4 className="details-section-title">Design & Branding</h4>
+                            <div className="details-grid">
+                              {config.designStyle && (
+                                <div className="detail-item">
+                                  <span className="detail-label">Design Style</span>
+                                  <span className="detail-value">{config.designStyle}</span>
+                                </div>
+                              )}
+                              {config.colorScheme && (
+                                <div className="detail-item">
+                                  <span className="detail-label">Color Scheme</span>
+                                  <span className="detail-value">{config.colorScheme}</span>
+                                </div>
+                              )}
+                              {config.branding && (
+                                <div className="detail-item full-width">
+                                  <span className="detail-label">Branding Guidelines</span>
+                                  <span className="detail-value">{config.branding}</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Integrations */}
+                        {config.integrations && (
+                          <div className="details-section">
+                            <h4 className="details-section-title">Required Integrations</h4>
+                            <p className="detail-text">{config.integrations}</p>
+                          </div>
+                        )}
+
+                        {/* Features */}
+                        {Array.isArray(config.features) && config.features.length > 0 && (
+                          <div className="details-section">
+                            <h4 className="details-section-title">Selected Features</h4>
                             <div className="features-list">
                               {config.features.map((feature, idx) => (
                                 <span key={idx} className="feature-tag">{feature}</span>
@@ -385,16 +453,49 @@ function Admin() {
                             </div>
                           </div>
                         )}
+
+                        {/* Boolean Features */}
+                        {(config.contentManagement || config.userAuthentication || config.paymentIntegration || 
+                          config.analytics || config.seoOptimization || config.responsiveDesign) && (
+                          <div className="details-section">
+                            <h4 className="details-section-title">Additional Features</h4>
+                            <div className="boolean-features">
+                              {config.contentManagement && <span className="boolean-feature">Content Management</span>}
+                              {config.userAuthentication && <span className="boolean-feature">User Authentication</span>}
+                              {config.paymentIntegration && <span className="boolean-feature">Payment Integration</span>}
+                              {config.analytics && <span className="boolean-feature">Analytics</span>}
+                              {config.seoOptimization && <span className="boolean-feature">SEO Optimization</span>}
+                              {config.responsiveDesign && <span className="boolean-feature">Responsive Design</span>}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Description */}
                         {config.description && (
-                          <div className="detail-section">
-                            <span className="detail-label">Description</span>
+                          <div className="details-section">
+                            <h4 className="details-section-title">Project Description</h4>
                             <p className="detail-text">{config.description}</p>
                           </div>
                         )}
+
+                        {/* Additional Notes */}
                         {config.additionalNotes && (
-                          <div className="detail-section">
-                            <span className="detail-label">Additional Notes</span>
+                          <div className="details-section">
+                            <h4 className="details-section-title">Additional Notes</h4>
                             <p className="detail-text">{config.additionalNotes}</p>
+                          </div>
+                        )}
+
+                        {/* Terms Accepted */}
+                        {config.termsAccepted && (
+                          <div className="details-section">
+                            <div className="terms-badge">
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M9 12L11 14L15 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                <path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                              Terms and Conditions Accepted
+                            </div>
                           </div>
                         )}
                       </div>
