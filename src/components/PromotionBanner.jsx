@@ -17,11 +17,16 @@ function PromotionBanner() {
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
-    const loadPromotion = () => {
-      const promoData = getPromotionData();
-      if (promoData && promoData.enabled) {
-        setPromotion(promoData);
-      } else {
+    const loadPromotion = async () => {
+      try {
+        const promoData = await getPromotionData();
+        if (promoData && promoData.enabled) {
+          setPromotion(promoData);
+        } else {
+          setPromotion(null);
+        }
+      } catch (error) {
+        console.error('Error loading promotion data:', error);
         setPromotion(null);
       }
     };
@@ -34,19 +39,9 @@ function PromotionBanner() {
     };
 
     window.addEventListener('promotionUpdated', handlePromotionUpdate);
-    
-    // Also listen for storage changes (for cross-tab updates)
-    const handleStorageChange = (e) => {
-      if (e.key === 'promotionData' || !e.key) {
-        loadPromotion();
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
 
     return () => {
       window.removeEventListener('promotionUpdated', handlePromotionUpdate);
-      window.removeEventListener('storage', handleStorageChange);
     };
   }, []);
 

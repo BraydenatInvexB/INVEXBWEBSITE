@@ -18,12 +18,17 @@ function Contact() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    saveContactSubmission(formData);
-    setSubmitted(true);
-    setFormData({ name: '', email: '', message: '' });
-    setTimeout(() => setSubmitted(false), 5000);
+    try {
+      await saveContactSubmission(formData);
+      setSubmitted(true);
+      setFormData({ name: '', email: '', message: '' });
+      setTimeout(() => setSubmitted(false), 5000);
+    } catch (error) {
+      console.error('Failed to submit contact form:', error);
+      alert('Failed to send message. Please try again.');
+    }
   };
 
   return (

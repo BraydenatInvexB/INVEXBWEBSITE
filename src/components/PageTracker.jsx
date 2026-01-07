@@ -9,13 +9,13 @@ function PageTracker() {
     // Use requestIdleCallback to avoid blocking the main thread
     const scheduleSave = () => {
       if ('requestIdleCallback' in window) {
-        requestIdleCallback(() => {
-          savePageVisit(location.pathname);
+        requestIdleCallback(async () => {
+          await savePageVisit(location.pathname);
         }, { timeout: 2000 });
       } else {
         // Fallback for browsers without requestIdleCallback
-        setTimeout(() => {
-          savePageVisit(location.pathname);
+        setTimeout(async () => {
+          await savePageVisit(location.pathname);
         }, 0);
       }
     };

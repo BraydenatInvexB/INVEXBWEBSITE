@@ -29,11 +29,21 @@ function Admin() {
     loadData();
   }, [isAuthenticated, navigate]);
 
-  const loadData = () => {
-    setContactSubmissions(getContactSubmissions());
-    setProjectConfigs(getProjectConfigurations());
-    setPageVisits(getPageVisits());
-    setPromotionData(getPromotionData());
+  const loadData = async () => {
+    try {
+      const [contacts, projects, visits, promotion] = await Promise.all([
+        getContactSubmissions(),
+        getProjectConfigurations(),
+        getPageVisits(),
+        getPromotionData()
+      ]);
+      setContactSubmissions(contacts);
+      setProjectConfigs(projects);
+      setPageVisits(visits);
+      setPromotionData(promotion);
+    } catch (error) {
+      console.error('Error loading data:', error);
+    }
   };
 
   const handleLogout = () => {
@@ -41,10 +51,15 @@ function Admin() {
     navigate('/');
   };
 
-  const handleClearData = () => {
+  const handleClearData = async () => {
     if (window.confirm('Are you sure you want to clear all data? This cannot be undone.')) {
-      clearAllData();
-      loadData();
+      try {
+        await clearAllData();
+        await loadData();
+      } catch (error) {
+        console.error('Error clearing data:', error);
+        alert('Failed to clear data. Please try again.');
+      }
     }
   };
 
@@ -475,11 +490,14 @@ function Admin() {
                     <input
                       type="checkbox"
                       checked={promotionData.enabled}
-                      onChange={(e) => {
+                      onChange={async (e) => {
                         const updated = { ...promotionData, enabled: e.target.checked };
                         setPromotionData(updated);
-                        savePromotionData(updated);
-                        window.dispatchEvent(new Event('promotionUpdated'));
+                        try {
+                          await savePromotionData(updated);
+                        } catch (error) {
+                          console.error('Failed to save promotion data:', error);
+                        }
                       }}
                       className="form-checkbox-admin"
                     />
@@ -492,11 +510,14 @@ function Admin() {
                       type="text"
                       id="promotion-message"
                       value={promotionData.message || ''}
-                      onChange={(e) => {
+                      onChange={async (e) => {
                         const updated = { ...promotionData, message: e.target.value };
                         setPromotionData(updated);
-                        savePromotionData(updated);
-                        window.dispatchEvent(new Event('promotionUpdated'));
+                        try {
+                          await savePromotionData(updated);
+                        } catch (error) {
+                          console.error('Failed to save promotion data:', error);
+                        }
                       }}
                       placeholder="start a business for"
                       className="form-textarea-admin"
@@ -509,11 +530,14 @@ function Admin() {
                       type="text"
                       id="promotion-price"
                       value={promotionData.price || ''}
-                      onChange={(e) => {
+                      onChange={async (e) => {
                         const updated = { ...promotionData, price: e.target.value };
                         setPromotionData(updated);
-                        savePromotionData(updated);
-                        window.dispatchEvent(new Event('promotionUpdated'));
+                        try {
+                          await savePromotionData(updated);
+                        } catch (error) {
+                          console.error('Failed to save promotion data:', error);
+                        }
                       }}
                       placeholder="R19999"
                       className="form-textarea-admin"
@@ -521,11 +545,14 @@ function Admin() {
                     <p className="form-hint">The price will be displayed on a separate line below the message</p>
                   </div>
                   <button
-                    onClick={() => {
-                      savePromotionData(promotionData);
-                      // Dispatch custom event to update banner
-                      window.dispatchEvent(new Event('promotionUpdated'));
-                      alert('Promotion settings saved successfully!');
+                    onClick={async () => {
+                      try {
+                        await savePromotionData(promotionData);
+                        alert('Promotion settings saved successfully!');
+                      } catch (error) {
+                        console.error('Failed to save promotion data:', error);
+                        alert('Failed to save promotion settings. Please try again.');
+                      }
                     }}
                     className="save-promotion-button"
                   >

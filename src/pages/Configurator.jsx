@@ -58,7 +58,7 @@ function Configurator() {
 
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (!formData.termsAccepted) {
@@ -66,35 +66,41 @@ function Configurator() {
       return;
     }
     
-    saveProjectConfiguration(formData);
-    setSubmitted(true);
-    // Reset form
-    setFormData({
-      projectType: '',
-      projectName: '',
-      description: '',
-      features: [],
-      targetAudience: '',
-      timeline: '',
-      platform: [],
-      integrations: '',
-      designStyle: '',
-      colorScheme: '',
-      branding: '',
-      contentManagement: false,
-      userAuthentication: false,
-      paymentIntegration: false,
-      analytics: false,
-      seoOptimization: false,
-      responsiveDesign: false,
-      contactName: '',
-      contactEmail: '',
-      contactPhone: '',
-      companyName: '',
-      additionalNotes: '',
-      termsAccepted: false
-    });
-    setTimeout(() => setSubmitted(false), 5000);
+    try {
+      await saveProjectConfiguration(formData);
+      setSubmitted(true);
+      // Reset form
+      setFormData({
+        projectType: '',
+        projectName: '',
+        description: '',
+        features: [],
+        targetAudience: '',
+        timeline: '',
+        platform: [],
+        integrations: '',
+        designStyle: '',
+        colorScheme: '',
+        branding: '',
+        contentManagement: false,
+        userAuthentication: false,
+        paymentIntegration: false,
+        analytics: false,
+        seoOptimization: false,
+        responsiveDesign: false,
+        contactName: '',
+        contactEmail: '',
+        contactPhone: '',
+        companyName: '',
+        additionalNotes: '',
+        termsAccepted: false
+      });
+      setTimeout(() => setSubmitted(false), 5000);
+    } catch (error) {
+      console.error('Failed to submit project configuration:', error);
+      const errorMessage = error.message || 'Unknown error occurred';
+      alert(`Failed to submit project configuration: ${errorMessage}\n\nPlease check:\n1. Supabase tables are created\n2. RLS policies allow inserts\n3. Check browser console for details`);
+    }
   };
 
   return (
