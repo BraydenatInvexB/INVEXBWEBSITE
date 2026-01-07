@@ -215,6 +215,38 @@ export const getPageVisits = async () => {
   }
 };
 
+// Delete single project configuration
+export const deleteProjectConfiguration = async (id) => {
+  try {
+    const { error } = await supabase
+      .from('project_configurations')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+    return true;
+  } catch (error) {
+    console.error('Error deleting project configuration:', error);
+    throw error;
+  }
+};
+
+// Delete single contact submission
+export const deleteContactSubmission = async (id) => {
+  try {
+    const { error } = await supabase
+      .from('contact_submissions')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+    return true;
+  } catch (error) {
+    console.error('Error deleting contact submission:', error);
+    throw error;
+  }
+};
+
 // Clear All Data (Admin function - requires authentication)
 export const clearAllData = async () => {
   try {

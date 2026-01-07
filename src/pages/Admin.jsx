@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { 
-  getContactSubmissions, 
-  getProjectConfigurations, 
+import {
+  getContactSubmissions,
+  getProjectConfigurations,
   getPageVisits,
   clearAllData,
   getPromotionData,
-  savePromotionData
+  savePromotionData,
+  deleteProjectConfiguration,
+  deleteContactSubmission
 } from '../utils/storage';
 import './Admin.css';
 
@@ -20,6 +22,9 @@ function Admin() {
   const [pageVisits, setPageVisits] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [promotionData, setPromotionData] = useState({ enabled: true, message: '', price: '' });
+  const [projectFilter, setProjectFilter] = useState('all'); // 'all', 'website', 'web-app', 'mobile-app', etc.
+  const [projectSort, setProjectSort] = useState('newest'); // 'newest', 'oldest', 'name'
+  const [expandedProjects, setExpandedProjects] = useState(new Set());
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -79,11 +84,67 @@ function Admin() {
     sub.message?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const filteredProjects = projectConfigs.filter(proj =>
-    proj.projectName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    proj.contactEmail?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    proj.companyName?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const handleDeleteProject = async (id) => {
+    if (window.confirm('Are you sure you want to delete this project configuration? This cannot be undone.')) {
+      try {
+        await deleteProjectConfiguration(id);
+        await loadData();
+      } catch (error) {
+        console.error('Error deleting project:', error);
+        alert('Failed to delete project. Please try again.');
+      }
+    }
+  };
+
+  const handleDeleteContact = async (id) => {
+    if (window.confirm('Are you sure you want to delete this contact submission? This cannot be undone.')) {
+      try {
+        await deleteContactSubmission(id);
+        await loadData();
+      } catch (error) {
+        console.error('Error deleting contact:', error);
+        alert('Failed to delete contact. Please try again.');
+      }
+    }
+  };
+
+  const toggleProjectExpanded = (id) => {
+    const newExpanded = new Set(expandedProjects);
+    if (newExpanded.has(id)) {
+      newExpanded.delete(id);
+    } else {
+      newExpanded.add(id);
+    }
+    setExpandedProjects(newExpanded);
+  };
+
+  // Filter and sort projects
+  let filteredProjects = projectConfigs.filter(proj => {
+    const matchesSearch = 
+      proj.projectName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      proj.contactEmail?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      proj.companyName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      proj.contactName?.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesFilter = projectFilter === 'all' || proj.projectType === projectFilter;
+    
+    return matchesSearch && matchesFilter;
+  });
+
+  // Sort projects
+  filteredProjects = [...filteredProjects].sort((a, b) => {
+    if (projectSort === 'newest') {
+      return new Date(b.timestamp) - new Date(a.timestamp);
+    } else if (projectSort === 'oldest') {
+      return new Date(a.timestamp) - new Date(b.timestamp);
+    } else if (projectSort === 'name') {
+      return (a.projectName || '').localeCompare(b.projectName || '');
+    }
+    return 0;
+  });
+
+  // Get unique project types for filter
+  const projectTypes = ['all', ...new Set(projectConfigs.map(p => p.projectType).filter(Boolean))];
 
   if (!isAuthenticated) {
     return null;
@@ -285,13 +346,37 @@ function Admin() {
                           <h3 className="submission-name">{submission.name}</h3>
                           <p className="submission-email">{submission.email}</p>
                         </div>
-                        <div className="submission-meta">
-                          <span className="submission-date">
-                            {new Date(submission.timestamp).toLocaleDateString()}
-                          </span>
-                          <span className="submission-time">
-                            {new Date(submission.timestamp).toLocaleTimeString()}
-                          </span>
+                        <div className="submission-actions">
+                          <div className="submission-meta">
+                            <span className="submission-date">
+                              {new Date(submission.timestamp).toLocaleDateString()}
+                            </span>
+                            <span className="submission-time">
+                              {new Date(submission.timestamp).toLocaleTimeString()}
+                            </span>
+                          </div>
+                          <div className="card-actions">
+                            <a
+                              href={`mailto:${submission.email}`}
+                              className="action-btn email-btn"
+                              title="Send Email"
+                            >
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M4 4H20C21.1 4 22 4.9 22 6V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V6C2 4.9 2.9 4 4 4Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                <path d="M22 6L12 13L2 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                            </a>
+                            <button
+                              onClick={() => handleDeleteContact(submission.id)}
+                              className="action-btn delete-btn"
+                              title="Delete Contact"
+                            >
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M3 6H5H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                <path d="M8 6V4C8 3.46957 8.21071 2.96086 8.58579 2.58579C8.96086 2.21071 9.46957 2 10 2H14C14.5304 2 15.0391 2.21071 15.4142 2.58579C15.7893 2.96086 16 3.46957 16 4V6M19 6V20C19 20.5304 18.7893 21.0391 18.4142 21.4142C18.0391 21.7893 17.5304 22 17 22H7C6.46957 22 5.96086 21.7893 5.58579 21.4142C5.21071 21.0391 5 20.5304 5 20V6H19Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                            </button>
+                          </div>
                         </div>
                       </div>
                       <div className="submission-message">
@@ -309,18 +394,43 @@ function Admin() {
             <div className="admin-section">
               <div className="section-header">
                 <h2 className="section-title">Project Configurations</h2>
-                <div className="search-box">
-                  <svg className="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M21 21L16.65 16.65" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                  <input
-                    type="text"
-                    placeholder="Search projects..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="search-input"
-                  />
+                <div className="section-controls">
+                  <div className="filter-controls">
+                    <select
+                      value={projectFilter}
+                      onChange={(e) => setProjectFilter(e.target.value)}
+                      className="filter-select"
+                    >
+                      <option value="all">All Types</option>
+                      {projectTypes.filter(t => t !== 'all').map(type => (
+                        <option key={type} value={type}>
+                          {type.charAt(0).toUpperCase() + type.slice(1).replace('-', ' ')}
+                        </option>
+                      ))}
+                    </select>
+                    <select
+                      value={projectSort}
+                      onChange={(e) => setProjectSort(e.target.value)}
+                      className="filter-select"
+                    >
+                      <option value="newest">Newest First</option>
+                      <option value="oldest">Oldest First</option>
+                      <option value="name">Sort by Name</option>
+                    </select>
+                  </div>
+                  <div className="search-box">
+                    <svg className="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M21 21L16.65 16.65" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    <input
+                      type="text"
+                      placeholder="Search projects..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="search-input"
+                    />
+                  </div>
                 </div>
               </div>
               {filteredProjects.length === 0 ? (
@@ -335,27 +445,74 @@ function Admin() {
                 </div>
               ) : (
                 <div className="submissions-list">
-                  {filteredProjects.slice().reverse().map((config) => (
-                    <div key={config.id} className="submission-card project-card">
-                      <div className="submission-header">
+                  {filteredProjects.map((config) => {
+                    const isExpanded = expandedProjects.has(config.id);
+                    return (
+                    <div key={config.id} className={`submission-card project-card ${isExpanded ? 'expanded' : ''}`}>
+                      <div className="submission-header" onClick={() => toggleProjectExpanded(config.id)} style={{ cursor: 'pointer' }}>
                         <div className="submission-info">
-                          <h3 className="submission-name">{config.projectName || 'Untitled Project'}</h3>
+                          <div className="submission-title-row">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleProjectExpanded(config.id);
+                              }}
+                              className="expand-icon-btn"
+                              title={isExpanded ? 'Collapse' : 'Expand'}
+                            >
+                              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d={isExpanded ? "M18 15L12 9L6 15" : "M6 9L12 15L18 9"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                            </button>
+                            <h3 className="submission-name">{config.projectName || 'Untitled Project'}</h3>
+                            {config.projectType && (
+                              <span className="project-type-badge">{config.projectType.replace('-', ' ')}</span>
+                            )}
+                          </div>
                           <div className="submission-contact">
                             <span className="submission-email">{config.contactEmail}</span>
                             {config.companyName && (
                               <span className="submission-company"> • {config.companyName}</span>
                             )}
+                            {config.timeline && (
+                              <span className="submission-timeline"> • {config.timeline}</span>
+                            )}
                           </div>
                         </div>
-                        <div className="submission-meta">
-                          <span className="submission-date">
-                            {new Date(config.timestamp).toLocaleDateString()}
-                          </span>
-                          <span className="submission-time">
-                            {new Date(config.timestamp).toLocaleTimeString()}
-                          </span>
+                        <div className="submission-actions">
+                          <div className="submission-meta">
+                            <span className="submission-date">
+                              {new Date(config.timestamp).toLocaleDateString()}
+                            </span>
+                            <span className="submission-time">
+                              {new Date(config.timestamp).toLocaleTimeString()}
+                            </span>
+                          </div>
+                          <div className="card-actions" onClick={(e) => e.stopPropagation()}>
+                            <a
+                              href={`mailto:${config.contactEmail}`}
+                              className="action-btn email-btn"
+                              title="Send Email"
+                            >
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M4 4H20C21.1 4 22 4.9 22 6V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V6C2 4.9 2.9 4 4 4Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                <path d="M22 6L12 13L2 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                            </a>
+                            <button
+                              onClick={() => handleDeleteProject(config.id)}
+                              className="action-btn delete-btn"
+                              title="Delete Project"
+                            >
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M3 6H5H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                <path d="M8 6V4C8 3.46957 8.21071 2.96086 8.58579 2.58579C8.96086 2.21071 9.46957 2 10 2H14C14.5304 2 15.0391 2.21071 15.4142 2.58579C15.7893 2.96086 16 3.46957 16 4V6M19 6V20C19 20.5304 18.7893 21.0391 18.4142 21.4142C18.0391 21.7893 17.5304 22 17 22H7C6.46957 22 5.96086 21.7893 5.58579 21.4142C5.21071 21.0391 5 20.5304 5 20V6H19Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                            </button>
+                          </div>
                         </div>
                       </div>
+                      {isExpanded && (
                       <div className="project-details">
                         {/* Project Information */}
                         <div className="details-section">
@@ -499,8 +656,10 @@ function Admin() {
                           </div>
                         )}
                       </div>
+                      )}
                     </div>
-                  ))}
+                  );
+                  })}
                 </div>
               )}
             </div>
