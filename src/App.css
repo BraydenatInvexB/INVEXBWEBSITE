@@ -1,0 +1,31 @@
+.App {
+  min-height: 100vh;
+  background: #FFFFFF;
+}
+
+main {
+  padding-top: 80px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Section transitions */
+section {
+  position: relative;
+}
+
+/* Smooth fade-in for sections */
+@keyframes sectionFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

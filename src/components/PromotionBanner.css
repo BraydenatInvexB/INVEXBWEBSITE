@@ -1,0 +1,367 @@
+.promotion-banner {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+  animation: slideUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  max-width: 90%;
+  width: 100%;
+  max-width: 700px;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(100px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+.promotion-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 120%;
+  height: 120%;
+  background: radial-gradient(circle, rgba(20, 82, 240, 0.3) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: pulse 2s ease-in-out infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.5;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+}
+
+.promotion-content {
+  background: linear-gradient(135deg, #1452f0 0%, #0e42d0 50%, #0d3db8 100%);
+  color: #FFFFFF;
+  padding: 1.5rem 2rem;
+  border-radius: 20px;
+  box-shadow: 
+    0 25px 70px rgba(20, 82, 240, 0.5),
+    0 10px 30px rgba(20, 82, 240, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(20px);
+}
+
+.promotion-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+  animation: shimmer 4s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+.promotion-content::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  animation: rotate 20s linear infinite;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.promotion-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  flex-shrink: 0;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  animation: iconFloat 3s ease-in-out infinite;
+}
+
+@keyframes iconFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.promotion-icon svg {
+  stroke: #FFFFFF;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.promotion-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.promotion-label {
+  background: rgba(255, 255, 255, 0.25);
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  white-space: nowrap;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  display: inline-block;
+  width: fit-content;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.promotion-message-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.promotion-message {
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.3;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  letter-spacing: -0.01em;
+}
+
+.promotion-price {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.15rem;
+  font-size: 2rem;
+  font-weight: 900;
+  line-height: 1;
+  text-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    0 4px 12px rgba(0, 0, 0, 0.2);
+  letter-spacing: -0.03em;
+  color: #FFFFFF;
+  margin-top: 0.25rem;
+}
+
+.promotion-price-currency {
+  font-size: 1.4rem;
+  font-weight: 800;
+  opacity: 0.95;
+}
+
+.promotion-price-amount {
+  font-size: 2.2rem;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  background: linear-gradient(180deg, #FFFFFF 0%, rgba(255, 255, 255, 0.9) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.promotion-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.promotion-cta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: rgba(255, 255, 255, 0.95);
+  color: #0e42d0;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+}
+
+.promotion-cta::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(14, 66, 208, 0.1), transparent);
+  transition: left 0.5s;
+}
+
+.promotion-cta:hover::before {
+  left: 100%;
+}
+
+.promotion-cta:hover {
+  background: #FFFFFF;
+  transform: translateY(-2px);
+  box-shadow: 
+    0 6px 20px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+}
+
+.promotion-cta:active {
+  transform: translateY(0);
+}
+
+.promotion-cta svg {
+  stroke: currentColor;
+  transition: transform 0.3s ease;
+}
+
+.promotion-cta:hover svg {
+  transform: translateX(3px);
+}
+
+.promotion-close {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: #FFFFFF;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.promotion-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg) scale(1.1);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.promotion-close:active {
+  transform: rotate(90deg) scale(0.95);
+}
+
+.promotion-close svg {
+  stroke: currentColor;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+}
+
+@media (max-width: 768px) {
+  .promotion-banner {
+    bottom: 1rem;
+    max-width: calc(100% - 2rem);
+  }
+  
+  .promotion-content {
+    padding: 1.25rem 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  
+  .promotion-icon {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .promotion-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .promotion-text {
+    flex: 1 1 100%;
+    order: 2;
+  }
+  
+  .promotion-label {
+    font-size: 0.65rem;
+    padding: 0.35rem 0.85rem;
+  }
+  
+  .promotion-message {
+    font-size: 1rem;
+  }
+  
+  .promotion-price {
+    font-size: 1.5rem;
+  }
+  
+  .promotion-price-currency {
+    font-size: 1.1rem;
+  }
+  
+  .promotion-price-amount {
+    font-size: 1.7rem;
+  }
+  
+  .promotion-actions {
+    flex: 1 1 100%;
+    order: 3;
+    justify-content: space-between;
+  }
+  
+  .promotion-cta {
+    flex: 1;
+    justify-content: center;
+    padding: 0.65rem 1.25rem;
+    font-size: 0.9rem;
+  }
+  
+  .promotion-close {
+    width: 36px;
+    height: 36px;
+  }
+}
+
