@@ -93,7 +93,7 @@
   border: 2px solid #E5E7EB;
   border-radius: 24px;
   padding: 3rem 2.5rem;
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
   position: relative;
   overflow: hidden;
   box-shadow: 
@@ -105,6 +105,8 @@
   height: 100%;
   width: 100%;
   box-sizing: border-box;
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 .service-icon-wrapper {
@@ -118,7 +120,9 @@
   position: relative;
   overflow: hidden;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 .service-icon-wrapper::before {

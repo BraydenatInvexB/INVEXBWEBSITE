@@ -34,15 +34,26 @@ export const getProjectConfigurations = () => {
 };
 
 export const savePageVisit = (path) => {
-  const visits = getPageVisits();
-  const visit = {
-    id: Date.now(),
-    path,
-    timestamp: new Date().toISOString()
-  };
-  visits.push(visit);
-  localStorage.setItem('pageVisits', JSON.stringify(visits));
-  return visit;
+  try {
+    const visits = getPageVisits();
+    // Limit stored visits to prevent localStorage bloat (keep last 1000)
+    const maxVisits = 1000;
+    const trimmedVisits = visits.length >= maxVisits 
+      ? visits.slice(-maxVisits + 1) 
+      : visits;
+    
+    const visit = {
+      id: Date.now(),
+      path,
+      timestamp: new Date().toISOString()
+    };
+    trimmedVisits.push(visit);
+    localStorage.setItem('pageVisits', JSON.stringify(trimmedVisits));
+    return visit;
+  } catch (error) {
+    console.warn('Failed to save page visit:', error);
+    return null;
+  }
 };
 
 export const getPageVisits = () => {

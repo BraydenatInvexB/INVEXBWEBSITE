@@ -47,10 +47,6 @@ function Login() {
               Sign In
             </button>
           </form>
-          
-          <div className="login-hint">
-            <p>Default password: <code>admin123</code></p>
-          </div>
         </div>
       </div>
     </div>
