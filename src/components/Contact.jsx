@@ -27,7 +27,8 @@ function Contact() {
       setTimeout(() => setSubmitted(false), 5000);
     } catch (error) {
       console.error('Failed to submit contact form:', error);
-      alert('Failed to send message. Please try again.');
+      const errorMessage = error.message || 'Unknown error occurred';
+      alert(`Failed to send message: ${errorMessage}\n\nPlease check:\n1. Supabase tables are created\n2. RLS policies allow inserts\n3. Check browser console for details`);
     }
   };
 

@@ -16,7 +16,10 @@ export const saveContactSubmission = async (data) => {
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error('Supabase error details:', error);
+      throw new Error(error.message || 'Failed to save contact submission');
+    }
     
     return {
       id: submission.id,
