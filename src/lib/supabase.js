@@ -13,13 +13,28 @@ if (!supabaseUrl || !supabaseAnonKey) {
   });
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    persistSession: false
+  }
+});
 
 // Test connection on load (only in development)
 if (import.meta.env.DEV) {
   console.log('Supabase client initialized:', {
     url: supabaseUrl,
-    hasKey: !!supabaseAnonKey
+    hasKey: !!supabaseAnonKey,
+    urlValid: supabaseUrl && supabaseUrl.includes('supabase.co')
   });
+  
+  // Test a simple query to verify connection
+  supabase.from('promotion_settings').select('id').limit(1)
+    .then(({ error }) => {
+      if (error) {
+        console.error('Supabase connection test failed:', error);
+      } else {
+        console.log('✓ Supabase connection successful');
+      }
+    });
 }
 
