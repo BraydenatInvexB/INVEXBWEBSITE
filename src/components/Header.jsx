@@ -43,9 +43,11 @@ function Header() {
             <NavLink to="/admin" onClick={closeMobileMenu}>Admin</NavLink>
           )}
         </nav>
-        {isMobileMenuOpen && (
-          <div className="mobile-menu-overlay" onClick={closeMobileMenu}></div>
-        )}
+        <div 
+          className={`mobile-menu-overlay ${isMobileMenuOpen ? 'active' : ''}`} 
+          onClick={closeMobileMenu}
+          aria-hidden="true"
+        ></div>
       </div>
     </header>
   );

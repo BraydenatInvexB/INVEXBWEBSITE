@@ -151,6 +151,7 @@
     transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 1000;
     overflow-y: auto;
+    will-change: right;
   }
 
   .nav.mobile-open {
@@ -181,14 +182,19 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
     z-index: 999;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: opacity;
   }
 
-  .nav.mobile-open ~ .mobile-menu-overlay {
+  .mobile-menu-overlay.active {
     opacity: 1;
     pointer-events: all;
   }
