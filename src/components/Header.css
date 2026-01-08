@@ -140,6 +140,14 @@
 @media (max-width: 768px) {
   .mobile-menu-toggle {
     display: flex;
+    position: relative;
+    z-index: 1001;
+  }
+  
+  /* Ensure hamburger stays on top when menu is open */
+  .nav.mobile-open ~ .mobile-menu-overlay ~ .mobile-menu-toggle,
+  .header-container .mobile-menu-toggle {
+    z-index: 1001;
   }
 
   .nav {
@@ -161,7 +169,6 @@
   }
 
   /* Show mobile menu structure on mobile */
-  .nav .mobile-menu-header,
   .nav .mobile-menu-items {
     display: flex;
   }
@@ -175,67 +182,17 @@
     right: 0;
   }
 
-  .mobile-menu-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1.25rem 1.5rem;
-    border-bottom: 1px solid #E5E7EB;
-    background: #FFFFFF;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-  }
-
-  .mobile-menu-logo {
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-    flex: 1;
-  }
-
-  .mobile-menu-close-btn {
-    background: #F9FAFB;
-    border: 1px solid #E5E7EB;
-    border-radius: 8px;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    color: #374151;
-    flex-shrink: 0;
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  .mobile-menu-close-btn:hover {
-    background: #F3F4F6;
-    border-color: #D1D5DB;
-    color: #111827;
-  }
-
-  .mobile-menu-close-btn:active {
-    background: #E5E7EB;
-    transform: scale(0.95);
-  }
-
-  .mobile-menu-close-btn svg {
-    stroke: currentColor;
-    stroke-width: 2;
-  }
-
   .mobile-menu-items {
     display: flex;
     flex-direction: column;
-    padding: 0.5rem 0;
+    padding: 1.5rem 0;
+    width: 100%;
   }
 
   .mobile-menu-item {
     width: 100%;
-    padding: 1rem 1.5rem;
-    font-size: 1rem;
+    padding: 1.125rem 1.5rem;
+    font-size: 1.05rem;
     font-weight: 500;
     color: #374151;
     text-decoration: none;
@@ -245,6 +202,10 @@
     align-items: center;
     min-height: 52px;
     position: relative;
+  }
+  
+  .mobile-menu-item:first-child {
+    border-top: 1px solid #F3F4F6;
   }
 
   .mobile-menu-item::before {
@@ -317,23 +278,13 @@
     width: min(90vw, 300px);
   }
 
-  .mobile-menu-header {
-    padding: 1rem 1.25rem;
-  }
-
-  .mobile-menu-close-btn {
-    width: 36px;
-    height: 36px;
-  }
-
-  .mobile-menu-close-btn svg {
-    width: 20px;
-    height: 20px;
+  .mobile-menu-items {
+    padding: 1.25rem 0;
   }
 
   .mobile-menu-item {
-    padding: 0.875rem 1.25rem;
-    font-size: 0.95rem;
+    padding: 1rem 1.25rem;
+    font-size: 1rem;
     min-height: 48px;
   }
 }
