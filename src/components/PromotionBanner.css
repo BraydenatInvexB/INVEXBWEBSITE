@@ -223,6 +223,8 @@
   align-items: center;
   gap: 0.75rem;
   flex-shrink: 0;
+  position: relative;
+  z-index: 5;
 }
 
 .promotion-cta {
@@ -286,8 +288,10 @@
   background: rgba(255, 255, 255, 0.2);
   border: none;
   color: #FFFFFF;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
   border-radius: 10px;
   cursor: pointer;
   display: flex;
@@ -297,6 +301,11 @@
   flex-shrink: 0;
   border: 1px solid rgba(255, 255, 255, 0.2);
   transform: translateZ(0);
+  position: relative;
+  z-index: 10;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
 }
 
 .promotion-close:hover {
@@ -305,13 +314,19 @@
   border-color: rgba(255, 255, 255, 0.4);
 }
 
-.promotion-close:active {
+.promotion-close:active,
+.promotion-close:focus {
+  background: rgba(255, 255, 255, 0.35);
   transform: rotate(90deg) scale(0.95);
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
 }
 
 .promotion-close svg {
   stroke: currentColor;
+  stroke-width: 2.5;
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+  pointer-events: none;
 }
 
 @media (max-width: 768px) {
@@ -383,8 +398,15 @@
   }
   
   .promotion-close {
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+  }
+  
+  .promotion-close svg {
+    width: 18px;
+    height: 18px;
   }
 }
 
@@ -438,8 +460,15 @@
   }
   
   .promotion-close {
-    width: 32px;
-    height: 32px;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+  }
+  
+  .promotion-close svg {
+    width: 16px;
+    height: 16px;
   }
 }
 
