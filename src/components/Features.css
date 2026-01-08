@@ -237,35 +237,91 @@
 }
 
 @media (max-width: 1024px) {
+  .features {
+    padding: clamp(5rem, 8vw, 10rem) clamp(1.5rem, 4vw, 2rem);
+  }
+  
   .features-grid {
     grid-template-columns: 1fr 1fr !important;
-    gap: 2rem !important;
-    row-gap: 2rem !important;
-    column-gap: 2rem !important;
+    gap: clamp(1.5rem, 3vw, 2rem) !important;
+    row-gap: clamp(1.5rem, 3vw, 2rem) !important;
+    column-gap: clamp(1.5rem, 3vw, 2rem) !important;
   }
   
   .feature-card {
-    padding: 3rem 2.5rem;
+    padding: clamp(2rem, 4vw, 3rem) clamp(1.5rem, 3vw, 2.5rem);
   }
 }
 
 @media (max-width: 768px) {
   .features {
-    padding: 5rem 1rem;
+    padding: clamp(3rem, 6vw, 5rem) clamp(1rem, 4vw, 2rem);
+  }
+  
+  .features-header {
+    margin-bottom: clamp(3rem, 5vw, 5rem);
+  }
+  
+  .features-badge {
+    font-size: clamp(0.7rem, 2vw, 0.875rem);
+    padding: clamp(0.4rem, 1.5vw, 0.5rem) clamp(0.875rem, 3vw, 1.25rem);
+    margin-bottom: clamp(1rem, 3vw, 1.5rem);
+  }
+  
+  .features-title {
+    font-size: clamp(2rem, 7vw, 2.5rem);
+    margin-bottom: clamp(0.75rem, 2vw, 1rem);
+  }
+  
+  .features-subtitle {
+    margin-bottom: clamp(2.5rem, 5vw, 3.5rem);
+    font-size: clamp(1rem, 2.5vw, 1.1rem);
+    padding: 0 clamp(0.5rem, 2vw, 1rem);
   }
   
   .features-grid {
     grid-template-columns: 1fr !important;
-    gap: 1.5rem !important;
+    gap: clamp(1.25rem, 3vw, 1.5rem) !important;
   }
   
   .feature-card {
-    padding: 2.5rem 2rem;
+    padding: clamp(2rem, 4vw, 2.5rem) clamp(1.5rem, 3vw, 2rem);
     min-height: auto;
   }
   
-  .features-subtitle {
-    margin-bottom: 3.5rem;
-    font-size: 1.1rem;
+  .feature-icon-wrapper {
+    width: clamp(56px, 10vw, 64px);
+    height: clamp(56px, 10vw, 64px);
+    margin-bottom: clamp(1.25rem, 2.5vw, 1.5rem);
+  }
+  
+  .feature-title {
+    font-size: clamp(1.35rem, 3.5vw, 1.6rem);
+    margin-bottom: clamp(1rem, 2vw, 1.25rem);
+  }
+  
+  .feature-description {
+    font-size: clamp(0.95rem, 2.5vw, 1.05rem);
+    line-height: 1.7;
+  }
+}
+
+@media (max-width: 480px) {
+  .features {
+    padding: clamp(2.5rem, 5vw, 3rem) clamp(0.875rem, 3vw, 1rem);
+  }
+  
+  .feature-card {
+    padding: clamp(1.75rem, 3.5vw, 2rem) clamp(1.25rem, 2.5vw, 1.5rem);
+  }
+}
+
+@media (max-width: 360px) {
+  .features-title {
+    font-size: clamp(1.75rem, 6vw, 2rem);
+  }
+  
+  .feature-title {
+    font-size: clamp(1.25rem, 3vw, 1.35rem);
   }
 }

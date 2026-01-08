@@ -18,6 +18,10 @@ export const saveContactSubmission = async (data) => {
 
     if (error) {
       console.error('Supabase error details:', error);
+      // Provide more helpful error messages
+      if (error.code === 'PGRST116' || error.message?.includes('not found') || error.message?.includes('NOT_FOUND')) {
+        throw new Error('Database table not found. Please ensure the Supabase tables are created. Check the SQL schema file.');
+      }
       throw new Error(error.message || 'Failed to save contact submission');
     }
     
@@ -94,6 +98,10 @@ export const saveProjectConfiguration = async (data) => {
 
     if (error) {
       console.error('Supabase error details:', error);
+      // Provide more helpful error messages
+      if (error.code === 'PGRST116' || error.message?.includes('not found') || error.message?.includes('NOT_FOUND')) {
+        throw new Error('Database table not found. Please ensure the Supabase tables are created. Check the SQL schema file.');
+      }
       throw new Error(error.message || 'Failed to save project configuration');
     }
     
@@ -307,10 +315,30 @@ export const getPromotionData = async () => {
       .from('promotion_settings')
       .select('*')
       .eq('id', '00000000-0000-0000-0000-000000000001')
-      .single();
+      .maybeSingle(); // Use maybeSingle() instead of single() to handle missing rows gracefully
 
+    // If error is 404 or PGRST116 (no rows), return default
     if (error) {
-      // If no data exists, return default
+      // Check if it's a "not found" error (table doesn't exist or no rows)
+      if (error.code === 'PGRST116' || error.message?.includes('not found') || error.message?.includes('NOT_FOUND')) {
+        console.warn('Promotion settings not found, using defaults:', error.message);
+        return {
+          enabled: true,
+          message: 'start a business for',
+          price: 'R19999'
+        };
+      }
+      // For other errors, log and return default
+      console.error('Error fetching promotion data:', error);
+      return {
+        enabled: true,
+        message: 'start a business for',
+        price: 'R19999'
+      };
+    }
+
+    // If no data exists, return default
+    if (!data) {
       return {
         enabled: true,
         message: 'start a business for',
