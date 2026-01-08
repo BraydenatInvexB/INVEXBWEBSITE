@@ -35,13 +35,40 @@ function Header() {
           </span>
         </button>
         <nav className={`nav ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
-          <NavLink to="/" end onClick={closeMobileMenu}>Home</NavLink>
-          <NavLink to="/services" onClick={closeMobileMenu}>Services</NavLink>
-          <NavLink to="/configurator" onClick={closeMobileMenu}>Configurator</NavLink>
-          <NavLink to="/contact" onClick={closeMobileMenu}>Contact</NavLink>
-          {isAuthenticated && (
-            <NavLink to="/admin" onClick={closeMobileMenu}>Admin</NavLink>
-          )}
+          <div className="mobile-menu-header">
+            <Link to="/" className="mobile-menu-logo" onClick={closeMobileMenu}>
+              <Logo />
+            </Link>
+            <button 
+              className="mobile-menu-close-btn" 
+              onClick={closeMobileMenu}
+              aria-label="Close menu"
+              type="button"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+          </div>
+          <div className="mobile-menu-items">
+            <NavLink to="/" end onClick={closeMobileMenu} className="mobile-menu-item">
+              <span>Home</span>
+            </NavLink>
+            <NavLink to="/services" onClick={closeMobileMenu} className="mobile-menu-item">
+              <span>Services</span>
+            </NavLink>
+            <NavLink to="/configurator" onClick={closeMobileMenu} className="mobile-menu-item">
+              <span>Configurator</span>
+            </NavLink>
+            <NavLink to="/contact" onClick={closeMobileMenu} className="mobile-menu-item">
+              <span>Contact</span>
+            </NavLink>
+            {isAuthenticated && (
+              <NavLink to="/admin" onClick={closeMobileMenu} className="mobile-menu-item">
+                <span>Admin</span>
+              </NavLink>
+            )}
+          </div>
         </nav>
         <div 
           className={`mobile-menu-overlay ${isMobileMenuOpen ? 'active' : ''}`} 
