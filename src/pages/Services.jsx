@@ -15,6 +15,7 @@ function ServicesPage() {
     {
       title: 'Website Creation',
       price: 'R9999',
+      startingFrom: true,
       description: 'Custom websites built with modern technologies, optimized for performance and user experience.',
       features: [
         'Responsive design for all devices',
@@ -29,6 +30,7 @@ function ServicesPage() {
     {
       title: 'Web Application Development',
       price: 'R19999',
+      startingFrom: true,
       description: 'Scalable web applications that solve complex business challenges with elegant solutions.',
       features: [
         'Custom functionality development',
@@ -43,6 +45,7 @@ function ServicesPage() {
     {
       title: 'Mobile Application Development',
       price: 'R19999',
+      startingFrom: true,
       description: 'Native and cross-platform mobile apps that deliver seamless experiences on iOS and Android.',
       features: [
         'iOS and Android development',
