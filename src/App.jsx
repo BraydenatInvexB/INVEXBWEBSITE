@@ -35,7 +35,7 @@ function App() {
           </main>
           <Footer />
           <PromotionBanner />
-        </div>
+      </div>
       </Router>
     </AuthProvider>
   );
