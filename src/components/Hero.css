@@ -299,3 +299,9 @@
     font-size: 0.85rem;
   }
 }
+
+@media (max-width: 480px) {
+  .hero-subtitle {
+    margin-bottom: 2rem;
+  }
+}

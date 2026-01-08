@@ -7,6 +7,18 @@ main {
   padding-top: 80px;
 }
 
+@media (max-width: 768px) {
+  main {
+    padding-bottom: 10rem; /* Space for promotion banner on mobile */
+  }
+}
+
+@media (max-width: 480px) {
+  main {
+    padding-bottom: 9rem; /* Slightly less space for smaller screens */
+  }
+}
+
 * {
   box-sizing: border-box;
 }

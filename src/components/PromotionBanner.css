@@ -22,6 +22,17 @@
   }
 }
 
+@keyframes slideUpMobile {
+  from {
+    opacity: 0;
+    transform: translateY(100px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 .promotion-glow {
   position: absolute;
   top: 50%;
@@ -306,7 +317,12 @@
 @media (max-width: 768px) {
   .promotion-banner {
     bottom: 1rem;
+    left: 1rem;
+    right: 1rem;
     max-width: calc(100% - 2rem);
+    width: auto;
+    transform: translateX(0) translateZ(0);
+    animation: slideUpMobile 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
   
   .promotion-content {
@@ -318,6 +334,7 @@
   .promotion-icon {
     width: 40px;
     height: 40px;
+    order: 1;
   }
   
   .promotion-icon svg {
@@ -355,6 +372,7 @@
     flex: 1 1 100%;
     order: 3;
     justify-content: space-between;
+    width: 100%;
   }
   
   .promotion-cta {
@@ -367,6 +385,61 @@
   .promotion-close {
     width: 36px;
     height: 36px;
+  }
+}
+
+@media (max-width: 480px) {
+  .promotion-banner {
+    bottom: 0.75rem;
+    left: 0.75rem;
+    right: 0.75rem;
+    max-width: calc(100% - 1.5rem);
+  }
+  
+  .promotion-content {
+    padding: 1rem 1.25rem;
+    gap: 0.75rem;
+  }
+  
+  .promotion-icon {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .promotion-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .promotion-label {
+    font-size: 0.6rem;
+    padding: 0.3rem 0.75rem;
+  }
+  
+  .promotion-message {
+    font-size: 0.9rem;
+  }
+  
+  .promotion-price {
+    font-size: 1.3rem;
+  }
+  
+  .promotion-price-currency {
+    font-size: 1rem;
+  }
+  
+  .promotion-price-amount {
+    font-size: 1.5rem;
+  }
+  
+  .promotion-cta {
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+  }
+  
+  .promotion-close {
+    width: 32px;
+    height: 32px;
   }
 }
 
