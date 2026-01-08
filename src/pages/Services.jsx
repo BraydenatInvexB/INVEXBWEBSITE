@@ -67,6 +67,51 @@ function ServicesPage() {
         'Technical support'
       ],
       technologies: ['Monitoring Tools', 'Cloud Services', 'Security Tools', 'Database Management']
+    },
+    {
+      title: 'Extra Features',
+      price: 'R999',
+      startingFrom: true,
+      description: 'Add custom features and functionality to enhance your application beyond the standard package.',
+      features: [
+        'Custom feature development',
+        'Third-party integrations',
+        'Advanced functionality',
+        'API integrations',
+        'Custom modules',
+        'Feature enhancements'
+      ],
+      technologies: ['Custom Development', 'API Integration', 'Third-party Services']
+    },
+    {
+      title: 'UX Design',
+      price: 'R7999',
+      startingFrom: true,
+      description: 'Professional user experience design services to create intuitive and engaging interfaces for your applications.',
+      features: [
+        'User research and analysis',
+        'Wireframing and prototyping',
+        'User interface design',
+        'Usability testing',
+        'Design system creation',
+        'Interactive prototypes'
+      ],
+      technologies: ['Figma', 'Adobe XD', 'Sketch', 'Prototyping Tools']
+    },
+    {
+      title: 'App Store Deployment',
+      price: 'R4999',
+      startingFrom: false,
+      description: 'Complete deployment service to publish your mobile application on the Apple App Store and Google Play Store. Note: Apple Developer License ($99/year) and Google Play Developer Account ($25 one-time) are not included.',
+      features: [
+        'App Store submission',
+        'Play Store submission',
+        'Store listing optimization',
+        'Screenshots and assets',
+        'App description writing',
+        'Submission support'
+      ],
+      technologies: ['App Store Connect', 'Google Play Console', 'Store Optimization']
     }
   ];
 
@@ -83,11 +128,29 @@ function ServicesPage() {
 
       <section className="services-detailed">
         <div className="services-detailed-container">
+          <div className="pricing-disclaimer">
+            <div className="disclaimer-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M12 16V12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M12 8H12.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+            <div className="disclaimer-content">
+              <h3 className="disclaimer-title">Great Value Pricing</h3>
+              <p className="disclaimer-text">
+                These competitive prices are for standard applications with essential features. If your project includes more advanced 
+                or complex features, reach out to us and we'll let you know if your requirements fit within these excellent rates. 
+                We're here to help you get the best value for your investment.
+              </p>
+            </div>
+          </div>
           {services.map((service, index) => (
             <div key={index} className="service-detailed-card">
               <div className="service-header">
                 <h2 className="service-detailed-title">{service.title}</h2>
                 <div className="service-detailed-price">
+                  {service.startingFrom && <span className="service-price-label">Starting from</span>}
                   <span className="service-price-amount">{formatPrice(service.price)}</span>
                   {service.price.includes('p/m') && <span className="service-price-period">per month</span>}
                 </div>
