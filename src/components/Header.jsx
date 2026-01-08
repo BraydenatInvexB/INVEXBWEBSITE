@@ -35,6 +35,16 @@ function Header() {
           </span>
         </button>
         <nav className={`nav ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
+          {/* Desktop Navigation */}
+          <NavLink to="/" end>Home</NavLink>
+          <NavLink to="/services">Services</NavLink>
+          <NavLink to="/configurator">Configurator</NavLink>
+          <NavLink to="/contact">Contact</NavLink>
+          {isAuthenticated && (
+            <NavLink to="/admin">Admin</NavLink>
+          )}
+          
+          {/* Mobile Navigation */}
           <div className="mobile-menu-header">
             <Link to="/" className="mobile-menu-logo" onClick={closeMobileMenu}>
               <Logo />

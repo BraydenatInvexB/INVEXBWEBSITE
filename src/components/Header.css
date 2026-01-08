@@ -87,6 +87,12 @@
   align-items: center;
 }
 
+/* Hide mobile menu structure on desktop */
+.nav .mobile-menu-header,
+.nav .mobile-menu-items {
+  display: none;
+}
+
 .nav a {
   color: #4B5563;
   text-decoration: none;
@@ -152,6 +158,17 @@
     z-index: 1000;
     overflow-y: auto;
     will-change: right;
+  }
+
+  /* Show mobile menu structure on mobile */
+  .nav .mobile-menu-header,
+  .nav .mobile-menu-items {
+    display: flex;
+  }
+
+  /* Hide regular nav links on mobile */
+  .nav > a:not(.mobile-menu-item) {
+    display: none;
   }
 
   .nav.mobile-open {

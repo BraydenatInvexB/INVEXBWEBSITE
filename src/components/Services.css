@@ -280,6 +280,15 @@
   gap: 0.25rem;
 }
 
+.service-price-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6B7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.125rem;
+}
+
 .service-price-amount {
   font-size: 2.5rem;
   font-weight: 900;
@@ -349,6 +358,10 @@
   .service-title {
     font-size: clamp(1.5rem, 4vw, 1.85rem);
     margin-bottom: clamp(0.5rem, 1.5vw, 0.75rem);
+  }
+  
+  .service-price-label {
+    font-size: clamp(0.7rem, 1.8vw, 0.75rem);
   }
   
   .service-price-amount {

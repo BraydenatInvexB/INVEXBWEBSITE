@@ -17,6 +17,7 @@ function Services() {
       title: 'Website Creation',
       description: 'Custom websites built with modern technologies, optimized for performance and user experience.',
       price: 'R9999',
+      startingFrom: true,
       icon: (
         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -30,6 +31,7 @@ function Services() {
       title: 'Web Application Development',
       description: 'Scalable web applications that solve complex business challenges with elegant solutions.',
       price: 'R19999',
+      startingFrom: true,
       icon: (
         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -43,6 +45,7 @@ function Services() {
       title: 'Mobile Application Development',
       description: 'Native and cross-platform mobile apps that deliver seamless experiences on iOS and Android.',
       price: 'R19999',
+      startingFrom: true,
       icon: (
         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <rect x="5" y="2" width="14" height="20" rx="2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -84,6 +87,7 @@ function Services() {
               </div>
               <h3 className="service-title">{service.title}</h3>
               <div className="service-price">
+                {service.startingFrom && <span className="service-price-label">Starting from</span>}
                 <span className="service-price-amount">{formatPrice(service.price)}</span>
                 {service.price.includes('p/m') && <span className="service-price-period">per month</span>}
               </div>

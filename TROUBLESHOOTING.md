@@ -32,7 +32,7 @@ RLS is enabled but policies aren't configured correctly.
 ### 4. Environment Variables Missing
 The Supabase URL or API key is not configured.
 
-**Solution:**
+**For Local Development:**
 1. Check your `.env` file exists in the project root
 2. Ensure it contains:
    ```
@@ -41,6 +41,18 @@ The Supabase URL or API key is not configured.
    ```
 3. Get these values from Supabase dashboard → **Settings** → **API**
 4. Restart your development server after adding/changing `.env`
+
+**For Vercel Deployment:**
+1. Go to Vercel Dashboard → Your Project → **Settings** → **Environment Variables**
+2. Add the following variables:
+   - `VITE_SUPABASE_URL` = your Supabase project URL
+   - `VITE_SUPABASE_ANON_KEY` = your Supabase anon key
+3. **IMPORTANT**: Make sure to add them for **Production**, **Preview**, and **Development**
+4. **CRITICAL**: After adding variables, you MUST redeploy:
+   - Go to **Deployments** tab
+   - Click the three dots (⋯) on the latest deployment
+   - Click **Redeploy**
+5. See `VERCEL_SETUP.md` for detailed Vercel setup instructions
 
 ### 5. Wrong Supabase Project
 You might be pointing to a different Supabase project.
@@ -82,6 +94,29 @@ You might be pointing to a different Supabase project.
 - **42501**: Permission denied (RLS policy issue)
 - **NOT_FOUND**: Resource not found (table/row/policy missing)
 
+## Vercel Deployment Issues
+
+If you're deploying to Vercel and getting 404 errors:
+
+1. **Environment Variables Not Set**:
+   - Go to Vercel Dashboard → Settings → Environment Variables
+   - Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`
+   - **Redeploy** after adding variables (Deployments → Redeploy)
+
+2. **Variables Not Prefixed with VITE_**:
+   - Vite only exposes variables that start with `VITE_`
+   - Make sure your variables are named `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`
+
+3. **Wrong Environment**:
+   - Variables must be added for Production, Preview, AND Development
+   - Check all three environments in Vercel settings
+
+4. **Build Cache Issues**:
+   - Clear Vercel build cache: Settings → General → Clear Build Cache
+   - Redeploy after clearing cache
+
+See `VERCEL_SETUP.md` for complete Vercel deployment guide.
+
 ## Still Having Issues?
 
 1. Check the Supabase dashboard logs: **Logs** → **API Logs**
@@ -91,4 +126,5 @@ You might be pointing to a different Supabase project.
    - `supabase-schema.sql` (creates tables)
    - `fix-promotion-settings.sql` (fixes promotion settings)
    - `SIMPLE-FIX.sql` (fixes RLS policies)
+5. **For Vercel**: Check deployment logs in Vercel dashboard for build errors
 
