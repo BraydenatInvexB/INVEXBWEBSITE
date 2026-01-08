@@ -1,0 +1,127 @@
+.whatsapp-container {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 998;
+}
+
+.whatsapp-close {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 20px;
+  height: 20px;
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #6B7280;
+  transition: all 0.2s ease;
+  z-index: 1;
+  padding: 0;
+}
+
+.whatsapp-close:hover {
+  background: #F3F4F6;
+  color: #374151;
+  transform: scale(1.1);
+}
+
+.whatsapp-button {
+  width: 60px;
+  height: 60px;
+  background: #25D366;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 
+    0 4px 12px rgba(37, 211, 102, 0.4),
+    0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.whatsapp-button:hover {
+  transform: scale(1.1);
+  box-shadow: 
+    0 6px 20px rgba(37, 211, 102, 0.5),
+    0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.whatsapp-button:active {
+  transform: scale(1.05);
+}
+
+.whatsapp-icon {
+  width: 32px;
+  height: 32px;
+  color: #FFFFFF;
+}
+
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .whatsapp-button {
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 56px;
+    height: 56px;
+  }
+
+  .whatsapp-icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .whatsapp-tooltip {
+    display: none;
+  }
+}
+
+/* Adjust position when promotion banner is visible */
+@media (max-width: 1024px) {
+  .whatsapp-container {
+    bottom: 12rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .whatsapp-container {
+    bottom: 11rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .whatsapp-container {
+    bottom: 10rem;
+    right: 1rem;
+  }
+
+  .whatsapp-button {
+    width: 52px;
+    height: 52px;
+  }
+
+  .whatsapp-icon {
+    width: 26px;
+    height: 26px;
+  }
+
+  .whatsapp-close {
+    width: 18px;
+    height: 18px;
+    top: -4px;
+    right: -4px;
+  }
+
+  .whatsapp-close svg {
+    width: 8px;
+    height: 8px;
+  }
+}
+

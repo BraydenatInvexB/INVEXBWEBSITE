@@ -1,6 +1,7 @@
 import Hero from '../components/Hero';
 import Features from '../components/Features';
 import Services from '../components/Services';
+import WhatsAppButton from '../components/WhatsAppButton';
 import './Home.css';
 
 function Home() {
@@ -9,6 +10,7 @@ function Home() {
       <Hero />
       <Features />
       <Services />
+      <WhatsAppButton />
     </div>
   );
 }
