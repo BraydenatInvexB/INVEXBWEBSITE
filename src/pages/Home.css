@@ -1,4 +1,10 @@
 .home-page {
-  min-height: calc(100vh - 80px);
+  width: 100%;
+  overflow-x: hidden;
 }
 
+/* Ensure sections stack properly */
+.home-page section {
+  position: relative;
+  z-index: 1;
+}

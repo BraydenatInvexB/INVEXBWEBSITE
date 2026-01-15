@@ -1,6 +1,10 @@
 import Hero from '../components/Hero';
-import Features from '../components/Features';
 import Services from '../components/Services';
+import Features from '../components/Features';
+import WhyTrustUs from '../components/WhyTrustUs';
+import TechStack from '../components/TechStack';
+import FAQ from '../components/FAQ';
+import CTA from '../components/CTA';
 import WhatsAppButton from '../components/WhatsAppButton';
 import './Home.css';
 
@@ -8,8 +12,12 @@ function Home() {
   return (
     <div className="home-page">
       <Hero />
-      <Features />
       <Services />
+      <Features />
+      <WhyTrustUs />
+      <TechStack />
+      <FAQ />
+      <CTA />
       <WhatsAppButton />
     </div>
   );
