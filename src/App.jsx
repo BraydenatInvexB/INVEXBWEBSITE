@@ -3,7 +3,6 @@ import { AuthProvider } from './context/AuthContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import PageTracker from './components/PageTracker';
-import PromotionBanner from './components/PromotionBanner';
 import Home from './pages/Home';
 import ServicesPage from './pages/Services';
 import ContactPage from './pages/Contact';
@@ -34,7 +33,6 @@ function App() {
             </Routes>
           </main>
           <Footer />
-          <PromotionBanner />
       </div>
       </Router>
     </AuthProvider>

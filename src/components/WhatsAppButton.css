@@ -83,10 +83,9 @@
   }
 }
 
-/* Adjust position when promotion banner is visible */
 @media (max-width: 1024px) {
   .whatsapp-container {
-    bottom: 12rem;
+    bottom: 6rem;
   }
 }
 
