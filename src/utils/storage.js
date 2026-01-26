@@ -362,3 +362,312 @@ export const getPromotionData = async () => {
   }
 };
 
+// Quotes and Invoices
+export const saveQuoteOrInvoice = async (data) => {
+  try {
+    const payload = {
+      type: data.type, // 'quote' or 'invoice'
+      document_number: data.documentNumber,
+      client_name: data.clientName,
+      client_email: data.clientEmail,
+      client_phone: data.clientPhone,
+      client_address: data.clientAddress,
+      billing_address: data.billingAddress || null,
+      company_name: data.companyName,
+      company_email: data.companyEmail,
+      company_phone: data.companyPhone,
+      company_website: data.companyWebsite || null,
+      company_address: data.companyAddress,
+      company_vat: data.companyVat,
+      items: data.items || [],
+      subtotal: data.subtotal,
+      tax_rate: data.taxRate || 0,
+      tax_amount: data.taxAmount || 0,
+      discount: data.discount || 0,
+      total: data.total,
+      notes: data.notes,
+      terms: data.terms,
+      issue_date: data.issueDate,
+      due_date: data.dueDate,
+      status: data.status || (data.type === 'quote' ? 'pending' : 'unpaid')
+    };
+
+    let doc, error;
+    
+    // If ID exists, update; otherwise insert
+    if (data.id) {
+      const result = await supabase
+        .from('quotes_invoices')
+        .update(payload)
+        .eq('id', data.id)
+        .select()
+        .single();
+      doc = result.data;
+      error = result.error;
+    } else {
+      const result = await supabase
+        .from('quotes_invoices')
+        .insert([payload])
+        .select()
+        .single();
+      doc = result.data;
+      error = result.error;
+    }
+
+    if (error) throw error;
+    
+    return {
+      id: doc.id,
+      type: doc.type,
+      documentNumber: doc.document_number,
+      clientName: doc.client_name,
+      clientEmail: doc.client_email,
+      clientPhone: doc.client_phone,
+      clientAddress: doc.client_address,
+      billingAddress: doc.billing_address || '',
+      companyName: doc.company_name,
+      companyEmail: doc.company_email,
+      companyPhone: doc.company_phone,
+      companyWebsite: doc.company_website || '',
+      companyAddress: doc.company_address,
+      companyVat: doc.company_vat,
+      items: doc.items,
+      subtotal: doc.subtotal,
+      taxRate: doc.tax_rate,
+      taxAmount: doc.tax_amount,
+      discount: doc.discount,
+      total: doc.total,
+      notes: doc.notes,
+      terms: doc.terms,
+      issueDate: doc.issue_date,
+      dueDate: doc.due_date,
+      status: doc.status,
+      timestamp: doc.created_at
+    };
+  } catch (error) {
+    console.error('Error saving quote/invoice:', error);
+    throw error;
+  }
+};
+
+export const getQuotesAndInvoices = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('quotes_invoices')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    
+    return data.map(doc => ({
+      id: doc.id,
+      type: doc.type,
+      documentNumber: doc.document_number,
+      clientName: doc.client_name,
+      clientEmail: doc.client_email,
+      clientPhone: doc.client_phone,
+      clientAddress: doc.client_address,
+      billingAddress: doc.billing_address || '',
+      companyName: doc.company_name,
+      companyEmail: doc.company_email,
+      companyPhone: doc.company_phone,
+      companyWebsite: doc.company_website || '',
+      companyAddress: doc.company_address,
+      companyVat: doc.company_vat,
+      items: doc.items,
+      subtotal: doc.subtotal,
+      taxRate: doc.tax_rate,
+      taxAmount: doc.tax_amount,
+      discount: doc.discount,
+      total: doc.total,
+      notes: doc.notes,
+      terms: doc.terms,
+      issueDate: doc.issue_date,
+      dueDate: doc.due_date,
+      status: doc.status,
+      timestamp: doc.created_at
+    }));
+  } catch (error) {
+    console.error('Error fetching quotes/invoices:', error);
+    return [];
+  }
+};
+
+export const deleteQuoteOrInvoice = async (id) => {
+  try {
+    const { error } = await supabase
+      .from('quotes_invoices')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+    return true;
+  } catch (error) {
+    console.error('Error deleting quote/invoice:', error);
+    throw error;
+  }
+};
+
+export const updateQuoteOrInvoiceStatus = async (id, status) => {
+  try {
+    const { error } = await supabase
+      .from('quotes_invoices')
+      .update({ status })
+      .eq('id', id);
+
+    if (error) throw error;
+    return true;
+  } catch (error) {
+    console.error('Error updating quote/invoice status:', error);
+    throw error;
+  }
+};
+
+// Company Settings
+export const saveCompanySettings = async (data) => {
+  try {
+    // Helper function to convert empty strings to null
+    const nullIfEmpty = (value) => (value === '' || value === null || value === undefined ? null : value);
+    
+    const { data: settings, error } = await supabase
+      .from('company_settings')
+      .upsert(
+        {
+          id: '00000000-0000-0000-0000-000000000002',
+          quote_prefix: data.quotePrefix || 'QUO',
+          invoice_prefix: data.invoicePrefix || 'INV',
+          quote_prefix_type: data.quotePrefixType || 'custom', // 'custom' or 'random'
+          invoice_prefix_type: data.invoicePrefixType || 'custom',
+          company_name: data.companyName || 'INVEXB',
+          company_email: nullIfEmpty(data.companyEmail),
+          company_phone: nullIfEmpty(data.companyPhone),
+          company_website: nullIfEmpty(data.companyWebsite),
+          company_address: nullIfEmpty(data.companyAddress),
+          company_vat: nullIfEmpty(data.companyVat),
+          bank_name: nullIfEmpty(data.bankName),
+          bank_account_number: nullIfEmpty(data.bankAccountNumber),
+          bank_account_type: nullIfEmpty(data.bankAccountType),
+          bank_branch_code: nullIfEmpty(data.bankBranchCode),
+          bank_swift_code: nullIfEmpty(data.bankSwiftCode)
+        },
+        { onConflict: 'id' }
+      )
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Supabase error details:', error);
+      throw error;
+    }
+    
+    return {
+      quotePrefix: settings.quote_prefix,
+      invoicePrefix: settings.invoice_prefix,
+      quotePrefixType: settings.quote_prefix_type,
+      invoicePrefixType: settings.invoice_prefix_type,
+      companyName: settings.company_name,
+      companyEmail: settings.company_email,
+      companyPhone: settings.company_phone,
+      companyWebsite: settings.company_website,
+      companyAddress: settings.company_address,
+      companyVat: settings.company_vat,
+      bankName: settings.bank_name,
+      bankAccountNumber: settings.bank_account_number,
+      bankAccountType: settings.bank_account_type,
+      bankBranchCode: settings.bank_branch_code,
+      bankSwiftCode: settings.bank_swift_code
+    };
+  } catch (error) {
+    console.error('Error saving company settings:', error);
+    throw error;
+  }
+};
+
+export const getCompanySettings = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('company_settings')
+      .select('*')
+      .eq('id', '00000000-0000-0000-0000-000000000002')
+      .maybeSingle();
+
+    if (error) {
+      if (error.code === 'PGRST116' || error.message?.includes('not found')) {
+        return {
+          quotePrefix: 'QUO',
+          invoicePrefix: 'INV',
+          quotePrefixType: 'custom',
+          invoicePrefixType: 'custom',
+          companyName: 'INVEXB',
+          companyEmail: 'info@invexb.com',
+          companyPhone: '',
+          companyWebsite: '',
+          companyAddress: '',
+          companyVat: '',
+          bankName: '',
+          bankAccountNumber: '',
+          bankAccountType: '',
+          bankBranchCode: '',
+          bankSwiftCode: ''
+        };
+      }
+      throw error;
+    }
+
+    if (!data) {
+      return {
+        quotePrefix: 'QUO',
+        invoicePrefix: 'INV',
+        quotePrefixType: 'custom',
+        invoicePrefixType: 'custom',
+        companyName: 'INVEXB',
+        companyEmail: 'info@invexb.com',
+        companyPhone: '',
+        companyAddress: '',
+        companyVat: '',
+        bankName: '',
+        bankAccountNumber: '',
+        bankAccountType: '',
+        bankBranchCode: '',
+        bankSwiftCode: ''
+      };
+    }
+    
+    return {
+      quotePrefix: data.quote_prefix || 'QUO',
+      invoicePrefix: data.invoice_prefix || 'INV',
+      quotePrefixType: data.quote_prefix_type || 'custom',
+      invoicePrefixType: data.invoice_prefix_type || 'custom',
+      companyName: data.company_name || 'INVEXB',
+      companyEmail: data.company_email || 'info@invexb.com',
+      companyPhone: data.company_phone || '',
+      companyWebsite: data.company_website || '',
+      companyAddress: data.company_address || '',
+      companyVat: data.company_vat || '',
+      bankName: data.bank_name || '',
+      bankAccountNumber: data.bank_account_number || '',
+      bankAccountType: data.bank_account_type || '',
+      bankBranchCode: data.bank_branch_code || '',
+      bankSwiftCode: data.bank_swift_code || ''
+    };
+  } catch (error) {
+    console.error('Error fetching company settings:', error);
+    return {
+      quotePrefix: 'QUO',
+      invoicePrefix: 'INV',
+      quotePrefixType: 'custom',
+      invoicePrefixType: 'custom',
+      companyName: 'INVEXB',
+      companyEmail: 'info@invexb.com',
+      companyPhone: '',
+      companyWebsite: '',
+      companyAddress: '',
+      companyVat: '',
+      bankName: '',
+      bankAccountNumber: '',
+      bankAccountType: '',
+      bankBranchCode: '',
+      bankSwiftCode: ''
+    };
+  }
+};
