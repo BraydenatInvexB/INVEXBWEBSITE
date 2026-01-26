@@ -671,3 +671,151 @@ export const getCompanySettings = async () => {
     };
   }
 };
+
+// Telesales Users Management
+export const getTelesalesUsers = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('telesales_users')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    
+    return data.map(user => ({
+      id: user.id,
+      username: user.username,
+      fullName: user.full_name || '',
+      email: user.email || '',
+      phone: user.phone || '',
+      isActive: user.is_active !== false,
+      createdAt: user.created_at,
+      updatedAt: user.updated_at
+    }));
+  } catch (error) {
+    console.error('Error fetching telesales users:', error);
+    throw error;
+  }
+};
+
+export const createTelesalesUser = async (userData) => {
+  try {
+    const { data, error } = await supabase
+      .from('telesales_users')
+      .insert([
+        {
+          username: userData.username,
+          password: userData.password, // In production, hash this password
+          full_name: userData.fullName || null,
+          email: userData.email || null,
+          phone: userData.phone || null,
+          is_active: userData.isActive !== false
+        }
+      ])
+      .select()
+      .single();
+
+    if (error) throw error;
+    
+    return {
+      id: data.id,
+      username: data.username,
+      fullName: data.full_name || '',
+      email: data.email || '',
+      phone: data.phone || '',
+      isActive: data.is_active !== false,
+      createdAt: data.created_at,
+      updatedAt: data.updated_at
+    };
+  } catch (error) {
+    console.error('Error creating telesales user:', error);
+    throw error;
+  }
+};
+
+export const updateTelesalesUser = async (userId, userData) => {
+  try {
+    const updateData = {};
+    if (userData.username !== undefined) updateData.username = userData.username;
+    if (userData.password !== undefined) updateData.password = userData.password; // In production, hash this
+    if (userData.fullName !== undefined) updateData.full_name = userData.fullName || null;
+    if (userData.email !== undefined) updateData.email = userData.email || null;
+    if (userData.phone !== undefined) updateData.phone = userData.phone || null;
+    if (userData.isActive !== undefined) updateData.is_active = userData.isActive;
+
+    const { data, error } = await supabase
+      .from('telesales_users')
+      .update(updateData)
+      .eq('id', userId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    
+    return {
+      id: data.id,
+      username: data.username,
+      fullName: data.full_name || '',
+      email: data.email || '',
+      phone: data.phone || '',
+      isActive: data.is_active !== false,
+      createdAt: data.created_at,
+      updatedAt: data.updated_at
+    };
+  } catch (error) {
+    console.error('Error updating telesales user:', error);
+    throw error;
+  }
+};
+
+export const deleteTelesalesUser = async (userId) => {
+  try {
+    const { error } = await supabase
+      .from('telesales_users')
+      .delete()
+      .eq('id', userId);
+
+    if (error) throw error;
+    return true;
+  } catch (error) {
+    console.error('Error deleting telesales user:', error);
+    throw error;
+  }
+};
+
+export const authenticateTelesalesUser = async (username, password) => {
+  try {
+    const { data, error } = await supabase
+      .from('telesales_users')
+      .select('*')
+      .eq('username', username)
+      .eq('is_active', true)
+      .single();
+
+    if (error) {
+      if (error.code === 'PGRST116') {
+        // No user found
+        return null;
+      }
+      throw error;
+    }
+
+    // In production, use proper password hashing (bcrypt, etc.)
+    // For now, simple comparison
+    if (data && data.password === password) {
+      return {
+        id: data.id,
+        username: data.username,
+        fullName: data.full_name || '',
+        email: data.email || '',
+        phone: data.phone || '',
+        role: 'telesales'
+      };
+    }
+
+    return null;
+  } catch (error) {
+    console.error('Error authenticating telesales user:', error);
+    return null;
+  }
+};

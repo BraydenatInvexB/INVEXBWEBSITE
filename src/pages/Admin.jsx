@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import BusinessFinder from '../components/BusinessFinder';
 import {
   getContactSubmissions,
   getProjectConfigurations,
@@ -13,20 +14,25 @@ import {
   deleteQuoteOrInvoice,
   updateQuoteOrInvoiceStatus,
   getCompanySettings,
-  saveCompanySettings
+  saveCompanySettings,
+  getTelesalesUsers,
+  createTelesalesUser,
+  updateTelesalesUser,
+  deleteTelesalesUser
 } from '../utils/storage';
 import './Admin.css';
 
 function Admin() {
-  const { isAuthenticated, userRole, logout } = useAuth();
+  const { isAuthenticated, userRole, fullName, logout } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
   
   // Set initial tab based on user role when it's loaded
   useEffect(() => {
-    if (userRole === 'telesales1' && activeTab !== 'quotes') {
-      setActiveTab('quotes');
-    } else if (userRole === 'admin' && activeTab === 'quotes') {
+    const isTelesales = userRole === 'telesales1' || userRole === 'telesales';
+    if (isTelesales && activeTab !== 'quotes' && activeTab !== 'business-finder') {
+      setActiveTab('business-finder');
+    } else if (userRole === 'admin' && (activeTab === 'quotes' || activeTab === 'business-finder')) {
       setActiveTab('overview');
     }
   }, [userRole]);
@@ -38,6 +44,15 @@ function Admin() {
   const [projectSort, setProjectSort] = useState('newest'); // 'newest', 'oldest', 'name'
   const [expandedProjects, setExpandedProjects] = useState(new Set());
   const [quotesInvoices, setQuotesInvoices] = useState([]);
+  const [telesalesUsers, setTelesalesUsers] = useState([]);
+  const [showUserForm, setShowUserForm] = useState(false);
+  const [editingUserId, setEditingUserId] = useState(null);
+  const [userForm, setUserForm] = useState({
+    username: '',
+    password: '',
+    fullName: '',
+    isActive: true
+  });
   const [showQuoteInvoiceForm, setShowQuoteInvoiceForm] = useState(false);
   const [quoteInvoiceType, setQuoteInvoiceType] = useState('quote'); // 'quote' or 'invoice'
   const [editingQuoteInvoiceId, setEditingQuoteInvoiceId] = useState(null); // Track which quote/invoice is being edited
@@ -92,7 +107,8 @@ function Admin() {
 
   const loadData = async () => {
     try {
-      if (userRole === 'telesales1') {
+      const isTelesales = userRole === 'telesales1' || userRole === 'telesales';
+      if (isTelesales) {
         // Telesales1 only needs quotes/invoices and company settings (read-only for company info)
         const [quotesInvoices, settings] = await Promise.all([
           getQuotesAndInvoices(),
@@ -112,18 +128,20 @@ function Admin() {
         }));
       } else {
         // Admin gets all data
-        const [contacts, projects, visits, quotesInvoices, settings] = await Promise.all([
+        const [contacts, projects, visits, quotesInvoices, settings, users] = await Promise.all([
           getContactSubmissions(),
           getProjectConfigurations(),
           getPageVisits(),
           getQuotesAndInvoices(),
-          getCompanySettings()
+          getCompanySettings(),
+          getTelesalesUsers()
         ]);
         setContactSubmissions(contacts);
         setProjectConfigs(projects);
         setPageVisits(visits);
         setQuotesInvoices(quotesInvoices);
         setCompanySettings(settings);
+        setTelesalesUsers(users);
         // Update form with company settings
         setQuoteInvoiceForm(prev => ({
           ...prev,
@@ -193,6 +211,65 @@ function Admin() {
       } catch (error) {
         console.error('Error deleting contact:', error);
         alert('Failed to delete contact. Please try again.');
+      }
+    }
+  };
+
+  // User Management Handlers
+  const handleCreateUser = () => {
+    setEditingUserId(null);
+    setUserForm({
+      username: '',
+      password: '',
+      fullName: '',
+      isActive: true
+    });
+    setShowUserForm(true);
+  };
+
+  const handleEditUser = (user) => {
+    setEditingUserId(user.id);
+    setUserForm({
+      username: user.username,
+      password: '', // Don't show existing password
+      fullName: user.fullName || '',
+      isActive: user.isActive
+    });
+    setShowUserForm(true);
+  };
+
+  const handleSaveUser = async () => {
+    try {
+      if (!userForm.username || !userForm.password) {
+        alert('Username and password are required.');
+        return;
+      }
+
+      if (editingUserId) {
+        await updateTelesalesUser(editingUserId, userForm);
+        alert('User updated successfully!');
+      } else {
+        await createTelesalesUser(userForm);
+        alert('User created successfully!');
+      }
+      
+      setShowUserForm(false);
+      await loadData();
+    } catch (error) {
+      console.error('Error saving user:', error);
+      alert(`Failed to save user: ${error.message || 'Please try again.'}`);
+    }
+  };
+
+  const handleDeleteUser = async (id) => {
+    if (window.confirm('Are you sure you want to delete this user? This cannot be undone.')) {
+      try {
+        await deleteTelesalesUser(id);
+        await loadData();
+        alert('User deleted successfully!');
+      } catch (error) {
+        console.error('Error deleting user:', error);
+        alert('Failed to delete user. Please try again.');
       }
     }
   };
@@ -705,11 +782,15 @@ function Admin() {
             </div>
             <div>
               <h1 className="admin-title">
-                {userRole === 'telesales1' ? 'Telesales Panel' : 'Admin Dashboard'}
-                {userRole === 'telesales1' && <span style={{ fontSize: '0.7em', color: '#6B7280', marginLeft: '10px', fontWeight: 'normal' }}>({userRole})</span>}
+                {(userRole === 'telesales1' || userRole === 'telesales') 
+                  ? (fullName || 'Telesales Panel')
+                  : 'Admin Dashboard'}
+                {(userRole === 'telesales1' || userRole === 'telesales') && !fullName && (
+                  <span style={{ fontSize: '0.7em', color: '#6B7280', marginLeft: '10px', fontWeight: 'normal' }}>({userRole})</span>
+                )}
               </h1>
               <p className="admin-subtitle">
-                {userRole === 'telesales1' ? 'Create and manage quotes & invoices' : 'Manage submissions and view analytics'}
+                {(userRole === 'telesales1' || userRole === 'telesales') ? 'Create and manage quotes & invoices' : 'Manage submissions and view analytics'}
               </p>
             </div>
           </div>
@@ -727,7 +808,7 @@ function Admin() {
       <div className="admin-container">
         <div className="admin-sidebar">
           <nav className="admin-nav">
-            {userRole !== 'telesales1' && (
+            {(userRole !== 'telesales1' && userRole !== 'telesales') && (
               <>
                 <button 
                   className={activeTab === 'overview' ? 'admin-nav-item active' : 'admin-nav-item'}
@@ -773,6 +854,18 @@ function Admin() {
                 </button>
               </>
             )}
+            {(userRole === 'telesales1' || userRole === 'telesales') && (
+              <button 
+                className={activeTab === 'business-finder' ? 'admin-nav-item active' : 'admin-nav-item'}
+                onClick={() => setActiveTab('business-finder')}
+              >
+                <svg className="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M21 10C21 17 12 23 12 23C12 23 3 17 3 10C3 7.61305 3.94821 5.32387 5.63604 3.63604C7.32387 1.94821 9.61305 1 12 1C14.3869 1 16.6761 1.94821 18.364 3.63604C20.0518 5.32387 21 7.61305 21 10Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <circle cx="12" cy="10" r="3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                <span>Business Finder</span>
+              </button>
+            )}
             <button 
               className={activeTab === 'quotes' ? 'admin-nav-item active' : 'admin-nav-item'}
               onClick={() => setActiveTab('quotes')}
@@ -787,23 +880,38 @@ function Admin() {
               <span>Quotes & Invoices</span>
               <span className="nav-badge">{quotesInvoices.length}</span>
             </button>
-            {userRole !== 'telesales1' && (
-              <button 
-                className={activeTab === 'company-settings' ? 'admin-nav-item active' : 'admin-nav-item'}
-                onClick={() => setActiveTab('company-settings')}
-              >
-                <svg className="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 15C15.866 15 19 11.866 19 8C19 4.13401 15.866 1 12 1C8.13401 1 5 4.13401 5 8C5 11.866 8.13401 15 12 15Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M8.21 13.89L7 23L12 20L17 23L15.79 13.88" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-                <span>Company Settings</span>
-              </button>
+            {(userRole !== 'telesales1' && userRole !== 'telesales') && (
+              <>
+                <button 
+                  className={activeTab === 'users' ? 'admin-nav-item active' : 'admin-nav-item'}
+                  onClick={() => setActiveTab('users')}
+                >
+                  <svg className="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M9 11C11.2091 11 13 9.20914 13 7C13 4.79086 11.2091 3 9 3C6.79086 3 5 4.79086 5 7C5 9.20914 6.79086 11 9 11Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M23 21V19C22.9993 18.1137 22.7044 17.2528 22.1574 16.5523C21.6104 15.8519 20.8441 15.3516 20 15.13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M16 3.13C16.8604 3.35031 17.623 3.85071 18.1676 4.55232C18.7122 5.25392 19.0078 6.11683 19.0078 7.005C19.0078 7.89318 18.7122 8.75608 18.1676 9.45769C17.623 10.1593 16.8604 10.6597 16 10.88" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  <span>Users</span>
+                  <span className="nav-badge">{telesalesUsers.length}</span>
+                </button>
+                <button 
+                  className={activeTab === 'company-settings' ? 'admin-nav-item active' : 'admin-nav-item'}
+                  onClick={() => setActiveTab('company-settings')}
+                >
+                  <svg className="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 15C15.866 15 19 11.866 19 8C19 4.13401 15.866 1 12 1C8.13401 1 5 4.13401 5 8C5 11.866 8.13401 15 12 15Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M8.21 13.89L7 23L12 20L17 23L15.79 13.88" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  <span>Company Settings</span>
+                </button>
+              </>
             )}
           </nav>
         </div>
 
         <div className="admin-content">
-          {userRole !== 'telesales1' && activeTab === 'overview' && (
+          {(userRole !== 'telesales1' && userRole !== 'telesales') && activeTab === 'overview' && (
             <div className="admin-section">
               <div className="section-header">
                 <h2 className="section-title">Dashboard Overview</h2>
@@ -876,7 +984,7 @@ function Admin() {
             </div>
           )}
 
-          {userRole !== 'telesales1' && activeTab === 'contacts' && (
+          {(userRole !== 'telesales1' && userRole !== 'telesales') && activeTab === 'contacts' && (
             <div className="admin-section">
               <div className="section-header">
                 <h2 className="section-title">Contact Form Submissions</h2>
@@ -958,7 +1066,7 @@ function Admin() {
             </div>
           )}
 
-          {userRole !== 'telesales1' && activeTab === 'projects' && (
+          {(userRole !== 'telesales1' && userRole !== 'telesales') && activeTab === 'projects' && (
             <div className="admin-section">
               <div className="section-header">
                 <h2 className="section-title">Project Configurations</h2>
@@ -1233,7 +1341,7 @@ function Admin() {
             </div>
           )}
 
-          {userRole !== 'telesales1' && activeTab === 'analytics' && (
+          {(userRole !== 'telesales1' && userRole !== 'telesales') && activeTab === 'analytics' && (
             <div className="admin-section">
               <h2 className="section-title">Page Analytics</h2>
               <div className="analytics-content">
@@ -1284,40 +1392,17 @@ function Admin() {
           )}
 
 
+          {((userRole === 'telesales1' || userRole === 'telesales') && activeTab === 'business-finder') && (
+            <div className="admin-section">
+              <BusinessFinder />
+            </div>
+          )}
+
           {activeTab === 'quotes' && (
             <div className="admin-section">
               <div className="section-header">
                 <h2 className="section-title">Quotes & Invoices</h2>
                 <div className="section-actions">
-                  <button 
-                    onClick={async () => {
-                      // Reload company settings to ensure we have the latest data
-                      const settings = await getCompanySettings();
-                      setCompanySettings(settings);
-                      setEditingQuoteInvoiceId(null);
-                      setQuoteInvoiceType('quote');
-                      setShowQuoteInvoiceForm(true);
-                      setQuoteInvoiceForm({
-                        ...quoteInvoiceForm,
-                        documentNumber: generateDocumentNumber('quote'),
-                        companyName: settings.companyName,
-                        companyEmail: settings.companyEmail,
-                        companyPhone: settings.companyPhone,
-                        companyWebsite: settings.companyWebsite,
-                        companyAddress: settings.companyAddress,
-                        companyVat: settings.companyVat
-                      });
-                    }}
-                    className="action-button refresh"
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M14 2V8H20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M12 18V12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M9 15H15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                    New Quote
-                  </button>
                   <button 
                     onClick={async () => {
                       // Reload company settings to ensure we have the latest data
@@ -1346,8 +1431,8 @@ function Admin() {
                     </svg>
                     New Invoice
                   </button>
-        </div>
-      </div>
+                </div>
+              </div>
 
               {showQuoteInvoiceForm ? (
                 <div className="quote-invoice-form-container">
@@ -1437,7 +1522,7 @@ function Admin() {
                           />
                         </div>
                       </div>
-                      {userRole !== 'telesales1' && projectConfigs.length > 0 && (
+                      {(userRole !== 'telesales1' && userRole !== 'telesales') && projectConfigs.length > 0 && (
                         <div className="form-group-quote">
                           <label>Load from Project:</label>
                           <select
@@ -1460,7 +1545,7 @@ function Admin() {
 
                     <div className="form-section-quote">
                       <h4>Company Information</h4>
-                      {userRole === 'telesales1' && (
+                      {(userRole === 'telesales1' || userRole === 'telesales') && (
                         <p style={{ color: '#6B7280', fontSize: '0.875rem', marginBottom: '1rem' }}>
                           Company information is managed by administrators and cannot be changed here.
                         </p>
@@ -1472,8 +1557,8 @@ function Admin() {
                             type="text"
                             value={quoteInvoiceForm.companyName}
                             onChange={(e) => setQuoteInvoiceForm({ ...quoteInvoiceForm, companyName: e.target.value })}
-                            disabled={userRole === 'telesales1'}
-                            readOnly={userRole === 'telesales1'}
+                            disabled={userRole === 'telesales1' || userRole === 'telesales'}
+                            readOnly={userRole === 'telesales1' || userRole === 'telesales'}
                           />
                         </div>
                         <div className="form-group-quote">
@@ -1482,8 +1567,8 @@ function Admin() {
                             type="email"
                             value={quoteInvoiceForm.companyEmail}
                             onChange={(e) => setQuoteInvoiceForm({ ...quoteInvoiceForm, companyEmail: e.target.value })}
-                            disabled={userRole === 'telesales1'}
-                            readOnly={userRole === 'telesales1'}
+                            disabled={userRole === 'telesales1' || userRole === 'telesales'}
+                            readOnly={userRole === 'telesales1' || userRole === 'telesales'}
                           />
                         </div>
                         <div className="form-group-quote">
@@ -1492,8 +1577,8 @@ function Admin() {
                             type="text"
                             value={quoteInvoiceForm.companyPhone}
                             onChange={(e) => setQuoteInvoiceForm({ ...quoteInvoiceForm, companyPhone: e.target.value })}
-                            disabled={userRole === 'telesales1'}
-                            readOnly={userRole === 'telesales1'}
+                            disabled={userRole === 'telesales1' || userRole === 'telesales'}
+                            readOnly={userRole === 'telesales1' || userRole === 'telesales'}
                           />
                         </div>
                         <div className="form-group-quote">
@@ -1503,8 +1588,8 @@ function Admin() {
                             value={quoteInvoiceForm.companyWebsite}
                             onChange={(e) => setQuoteInvoiceForm({ ...quoteInvoiceForm, companyWebsite: e.target.value })}
                             placeholder="https://www.example.com"
-                            disabled={userRole === 'telesales1'}
-                            readOnly={userRole === 'telesales1'}
+                            disabled={userRole === 'telesales1' || userRole === 'telesales'}
+                            readOnly={userRole === 'telesales1' || userRole === 'telesales'}
                           />
                         </div>
                         <div className="form-group-quote">
@@ -1513,8 +1598,8 @@ function Admin() {
                             type="text"
                             value={quoteInvoiceForm.companyVat}
                             onChange={(e) => setQuoteInvoiceForm({ ...quoteInvoiceForm, companyVat: e.target.value })}
-                            disabled={userRole === 'telesales1'}
-                            readOnly={userRole === 'telesales1'}
+                            disabled={userRole === 'telesales1' || userRole === 'telesales'}
+                            readOnly={userRole === 'telesales1' || userRole === 'telesales'}
                           />
                         </div>
                         <div className="form-group-quote full-width">
@@ -1523,8 +1608,8 @@ function Admin() {
                             value={quoteInvoiceForm.companyAddress}
                             onChange={(e) => setQuoteInvoiceForm({ ...quoteInvoiceForm, companyAddress: e.target.value })}
                             rows="2"
-                            disabled={userRole === 'telesales1'}
-                            readOnly={userRole === 'telesales1'}
+                            disabled={userRole === 'telesales1' || userRole === 'telesales'}
+                            readOnly={userRole === 'telesales1' || userRole === 'telesales'}
                           />
                         </div>
                       </div>
@@ -1772,7 +1857,142 @@ function Admin() {
             </div>
           )}
 
-          {userRole !== 'telesales1' && activeTab === 'company-settings' && (
+          {(userRole !== 'telesales1' && userRole !== 'telesales') && activeTab === 'users' && (
+            <div className="admin-section">
+              <div className="section-header">
+                <h2 className="section-title">Telesales Users</h2>
+                <button onClick={handleCreateUser} className="action-button refresh">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  Create User
+                </button>
+              </div>
+
+              {showUserForm && (
+                <div className="quote-invoice-form-container" style={{ marginBottom: '2rem' }}>
+                  <div className="quote-invoice-form-header">
+                    <h3>{editingUserId ? 'Edit User' : 'Create New User'}</h3>
+                    <button onClick={() => setShowUserForm(false)} className="close-form-btn">×</button>
+                  </div>
+                  <div className="quote-invoice-form">
+                    <div className="form-section-quote">
+                      <h4>User Information</h4>
+                      <div className="form-grid-quote">
+                        <div className="form-group-quote">
+                          <label>Username *</label>
+                          <input
+                            type="text"
+                            value={userForm.username}
+                            onChange={(e) => setUserForm({ ...userForm, username: e.target.value })}
+                            placeholder="Enter username"
+                            required
+                          />
+                        </div>
+                        <div className="form-group-quote">
+                          <label>Password *</label>
+                          <input
+                            type="password"
+                            value={userForm.password}
+                            onChange={(e) => setUserForm({ ...userForm, password: e.target.value })}
+                            placeholder={editingUserId ? "Leave blank to keep current password" : "Enter password"}
+                            required={!editingUserId}
+                          />
+                        </div>
+                        <div className="form-group-quote">
+                          <label>Full Name</label>
+                          <input
+                            type="text"
+                            value={userForm.fullName}
+                            onChange={(e) => setUserForm({ ...userForm, fullName: e.target.value })}
+                            placeholder="Enter full name"
+                          />
+                        </div>
+                        <div className="form-group-quote">
+                          <label>
+                            <input
+                              type="checkbox"
+                              checked={userForm.isActive}
+                              onChange={(e) => setUserForm({ ...userForm, isActive: e.target.checked })}
+                            />
+                            Active
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="form-actions-quote">
+                      <button onClick={handleSaveUser} className="save-btn-quote">
+                        {editingUserId ? 'Update User' : 'Create User'}
+                      </button>
+                      <button onClick={() => setShowUserForm(false)} className="cancel-btn-quote">
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {telesalesUsers.length === 0 ? (
+                <div className="empty-state">
+                  <div className="empty-icon">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M9 11C11.2091 11 13 9.20914 13 7C13 4.79086 11.2091 3 9 3C6.79086 3 5 4.79086 5 7C5 9.20914 6.79086 11 9 11Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                  <h3>No telesales users</h3>
+                  <p>Create your first telesales user to get started.</p>
+                </div>
+              ) : (
+                <div className="submissions-list">
+                  {telesalesUsers.map((user) => (
+                    <div key={user.id} className="submission-card">
+                      <div className="submission-header">
+                        <div className="submission-info">
+                          <h3 className="submission-name">
+                            {user.fullName || user.username}
+                            {!user.isActive && <span style={{ color: '#EF4444', marginLeft: '10px', fontSize: '0.9em' }}>(Inactive)</span>}
+                          </h3>
+                          <p className="submission-email">@{user.username}</p>
+                        </div>
+                        <div className="submission-actions">
+                          <div className="submission-meta">
+                            <span className="submission-date">
+                              Created: {new Date(user.createdAt).toLocaleDateString()}
+                            </span>
+                          </div>
+                          <div className="card-actions">
+                            <button
+                              onClick={() => handleEditUser(user)}
+                              className="action-btn edit-btn"
+                              title="Edit User"
+                            >
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M11 4H4C3.46957 4 2.96086 4.21071 2.58579 4.58579C2.21071 4.96086 2 5.46957 2 6V20C2 20.5304 2.21071 21.0391 2.58579 21.4142C2.96086 21.7893 3.46957 22 4 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                <path d="M18.5 2.5C18.8978 2.10218 19.4374 1.87868 20 1.87868C20.5626 1.87868 21.1022 2.10218 21.5 2.5C21.8978 2.89782 22.1213 3.43739 22.1213 4C22.1213 4.56261 21.8978 5.10218 21.5 5.5L12 15L8 16L9 12L18.5 2.5Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                            </button>
+                            <button
+                              onClick={() => handleDeleteUser(user.id)}
+                              className="action-btn delete-btn"
+                              title="Delete User"
+                            >
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M3 6H5H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                <path d="M8 6V4C8 3.46957 8.21071 2.96086 8.58579 2.58579C8.96086 2.21071 9.46957 2 10 2H14C14.5304 2 15.0391 2.21071 15.4142 2.58579C15.7893 2.96086 16 3.46957 16 4V6M19 6V20C19 20.5304 18.7893 21.0391 18.4142 21.4142C18.0391 21.7893 17.5304 22 17 22H7C6.46957 22 5.96086 21.7893 5.58579 21.4142C5.21071 21.0391 5 20.5304 5 20V6H19Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {(userRole !== 'telesales1' && userRole !== 'telesales') && activeTab === 'company-settings' && (
             <div className="admin-section">
               <div className="section-header">
                 <h2 className="section-title">Company Settings</h2>
