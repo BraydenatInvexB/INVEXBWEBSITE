@@ -21,9 +21,8 @@ function ServicesPage() {
         'Responsive design for all devices',
         'SEO optimization',
         'Fast loading times',
-        'Content management system',
-        'Custom branding and design',
-        'Analytics integration'
+        'Creation of your social media accounts',
+        'Custom branding and design'
       ],
       technologies: ['React', 'Next.js', 'WordPress', 'HTML5/CSS3', 'JavaScript']
     },
@@ -103,7 +102,7 @@ function ServicesPage() {
     },
     {
       title: 'App Store Deployment',
-      price: 'R4999',
+      price: 'R2499',
       startingFrom: false,
       description: 'Complete deployment service to publish your mobile application on the Apple App Store and Google Play Store. Note: Apple Developer License ($99/year) and Google Play Developer Account ($25 one-time) are not included.',
       features: [
