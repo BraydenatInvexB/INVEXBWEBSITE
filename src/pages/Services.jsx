@@ -57,6 +57,21 @@ function ServicesPage() {
       technologies: ['React Native', 'Flutter', 'Swift', 'Dart', 'Firebase']
     },
     {
+      title: 'Basic Maintenance',
+      price: 'R499p/m',
+      startingFrom: false,
+      description: 'Essential maintenance services for basic website updates, content changes, and simple modifications.',
+      features: [
+        'Basic content edits and updates',
+        'Pricing and product information changes',
+        'Text and image updates',
+        'Simple page modifications',
+        'Contact information updates',
+        'Basic troubleshooting'
+      ],
+      technologies: ['Content Management', 'Basic Updates', 'Simple Modifications']
+    },
+    {
       title: 'Maintenance',
       price: 'R2999p/m',
       description: 'Comprehensive maintenance and support services to keep your applications running smoothly and securely.',
