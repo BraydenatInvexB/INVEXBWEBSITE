@@ -26,6 +26,7 @@ function Header() {
         <nav className="nav desktop-nav">
           <NavLink to="/" end>Home</NavLink>
           <NavLink to="/services">Services</NavLink>
+          <NavLink to="/marketing">Marketing</NavLink>
           <NavLink to="/configurator">Configurator</NavLink>
           <NavLink to="/contact">Contact</NavLink>
           {isAuthenticated && (
@@ -74,6 +75,7 @@ function Header() {
           <nav className="mobile-menu-nav">
             <NavLink to="/" end onClick={closeMobileMenu}>Home</NavLink>
             <NavLink to="/services" onClick={closeMobileMenu}>Services</NavLink>
+            <NavLink to="/marketing" onClick={closeMobileMenu}>Marketing</NavLink>
             <NavLink to="/configurator" onClick={closeMobileMenu}>Configurator</NavLink>
             <NavLink to="/contact" onClick={closeMobileMenu}>Contact</NavLink>
             {isAuthenticated && (

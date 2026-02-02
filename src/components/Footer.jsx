@@ -40,6 +40,7 @@ function Footer() {
                 <nav className="footer-nav">
                   <Link to="/">Home</Link>
                   <Link to="/services">Services</Link>
+                  <Link to="/marketing">Marketing</Link>
                   <Link to="/contact">Contact</Link>
                 </nav>
               </div>

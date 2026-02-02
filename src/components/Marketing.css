@@ -1,0 +1,235 @@
+.marketing {
+  padding: 6rem 0;
+  background: var(--bg-white);
+  position: relative;
+}
+
+.marketing-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.marketing-header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.marketing-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--gradient-primary);
+  color: var(--text-inverse);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border-radius: 9999px;
+  margin-bottom: 1rem;
+}
+
+.marketing-title {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+.marketing-subtitle {
+  font-size: 1.125rem;
+  color: var(--text-secondary);
+  max-width: 640px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.marketing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
+.marketing-card {
+  background: var(--bg-light);
+  border-radius: var(--radius-xl);
+  padding: 2rem;
+  border: 1px solid var(--border-light);
+  display: flex;
+  flex-direction: column;
+  transition: var(--transition-smooth);
+  position: relative;
+  overflow: hidden;
+}
+
+.marketing-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--gradient-primary);
+  opacity: 0;
+  transition: var(--transition-smooth);
+}
+
+.marketing-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-xl);
+  border-color: transparent;
+}
+
+.marketing-card:hover::before {
+  opacity: 1;
+}
+
+.marketing-card.popular {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.marketing-card.popular::before {
+  opacity: 1;
+  height: 4px;
+}
+
+.marketing-popular-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: var(--gradient-primary);
+  color: var(--text-inverse);
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.marketing-icon {
+  width: 56px;
+  height: 56px;
+  background: var(--bg-blue-light);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  margin-bottom: 1.5rem;
+  transition: var(--transition-smooth);
+}
+
+.marketing-card:hover .marketing-icon {
+  background: var(--gradient-primary);
+  color: var(--text-inverse);
+}
+
+.marketing-card-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.marketing-price {
+  margin-bottom: 1rem;
+}
+
+.marketing-price-amount {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.marketing-price-period {
+  font-size: 0.9rem;
+  color: var(--text-tertiary);
+  font-weight: 400;
+  margin-left: 0.25rem;
+}
+
+.marketing-description {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  flex-grow: 1;
+}
+
+.marketing-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem 0;
+}
+
+.marketing-features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+}
+
+.marketing-features li svg {
+  flex-shrink: 0;
+  color: var(--primary);
+  margin-top: 0.2rem;
+}
+
+.marketing-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--gradient-primary);
+  color: var(--text-inverse);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: var(--radius-md);
+  transition: var(--transition-smooth);
+  margin-top: auto;
+}
+
+.marketing-cta:hover {
+  opacity: 0.95;
+  transform: translateY(-1px);
+}
+
+.marketing-card.popular .marketing-cta {
+  background: var(--primary);
+}
+
+@media (max-width: 1024px) {
+  .marketing-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .marketing-card:last-child {
+    grid-column: 1 / -1;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .marketing {
+    padding: 4rem 0;
+  }
+
+  .marketing-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .marketing-card:last-child {
+    grid-column: 1;
+    max-width: none;
+  }
+}

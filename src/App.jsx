@@ -5,6 +5,7 @@ import Footer from './components/Footer';
 import PageTracker from './components/PageTracker';
 import Home from './pages/Home';
 import ServicesPage from './pages/Services';
+import MarketingPage from './pages/Marketing';
 import ContactPage from './pages/Contact';
 import Configurator from './pages/Configurator';
 import Login from './pages/Login';
@@ -24,6 +25,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/services" element={<ServicesPage />} />
+              <Route path="/marketing" element={<MarketingPage />} />
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/configurator" element={<Configurator />} />
               <Route path="/login" element={<Login />} />
