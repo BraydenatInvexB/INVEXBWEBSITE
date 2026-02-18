@@ -41,6 +41,7 @@ function Footer() {
                   <Link to="/">Home</Link>
                   <Link to="/services">Services</Link>
                   <Link to="/marketing">Marketing</Link>
+                  <Link to="/telesales">Telesales</Link>
                   <Link to="/contact">Contact</Link>
                 </nav>
               </div>

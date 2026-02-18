@@ -29,6 +29,7 @@ function Header() {
           <NavLink to="/marketing">Marketing</NavLink>
           <NavLink to="/configurator">Configurator</NavLink>
           <NavLink to="/contact">Contact</NavLink>
+          <NavLink to="/telesales">Telesales</NavLink>
           {isAuthenticated && (
             <NavLink to="/admin">Admin</NavLink>
           )}
@@ -78,6 +79,7 @@ function Header() {
             <NavLink to="/marketing" onClick={closeMobileMenu}>Marketing</NavLink>
             <NavLink to="/configurator" onClick={closeMobileMenu}>Configurator</NavLink>
             <NavLink to="/contact" onClick={closeMobileMenu}>Contact</NavLink>
+            <NavLink to="/telesales" onClick={closeMobileMenu}>Telesales</NavLink>
             {isAuthenticated && (
               <NavLink to="/admin" onClick={closeMobileMenu}>Admin</NavLink>
             )}

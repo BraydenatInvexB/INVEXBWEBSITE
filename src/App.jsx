@@ -6,6 +6,7 @@ import PageTracker from './components/PageTracker';
 import Home from './pages/Home';
 import ServicesPage from './pages/Services';
 import MarketingPage from './pages/Marketing';
+import Telesales from './pages/Telesales';
 import ContactPage from './pages/Contact';
 import Configurator from './pages/Configurator';
 import Login from './pages/Login';
@@ -26,6 +27,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/services" element={<ServicesPage />} />
               <Route path="/marketing" element={<MarketingPage />} />
+              <Route path="/telesales" element={<Telesales />} />
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/configurator" element={<Configurator />} />
               <Route path="/login" element={<Login />} />
