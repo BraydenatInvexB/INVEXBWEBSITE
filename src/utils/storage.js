@@ -1,5 +1,5 @@
 // Storage utility using Supabase
-import { supabase } from '../lib/supabase';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
 // Contact Submissions
 export const saveContactSubmission = async (data) => {
@@ -182,6 +182,8 @@ export const getProjectConfigurations = async () => {
 
 // Page Visits
 export const savePageVisit = async (path) => {
+  if (!isSupabaseConfigured) return null;
+
   try {
     const { data, error } = await supabase
       .from('page_visits')

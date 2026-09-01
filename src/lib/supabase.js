@@ -4,23 +4,26 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || import.meta.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('Missing Supabase environment variables. Please check your .env file.');
-  console.error('Required variables: VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY');
-  console.error('Current values:', {
-    url: supabaseUrl ? '✓ Set' : '✗ Missing',
-    key: supabaseAnonKey ? '✓ Set' : '✗ Missing'
-  });
+export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
+
+if (!isSupabaseConfigured) {
+  console.warn('Supabase is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to a local .env file.');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    persistSession: false
+// Placeholders keep the site rendering when no project is configured.
+// Do not query or write until real credentials are set.
+export const supabase = createClient(
+  supabaseUrl || 'https://placeholder.supabase.co',
+  supabaseAnonKey || 'placeholder-anon-key',
+  {
+    auth: {
+      persistSession: false
+    }
   }
-});
+);
 
-// Test connection on load (only in development)
-if (import.meta.env.DEV) {
+// Test connection on load (only in development, and only with real credentials)
+if (import.meta.env.DEV && isSupabaseConfigured) {
   console.log('Supabase client initialized:', {
     url: supabaseUrl,
     hasKey: !!supabaseAnonKey,
